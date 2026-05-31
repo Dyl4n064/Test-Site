@@ -18,7 +18,7 @@
         <div class="field"><label>Situation</label><input type="text" id="f_situation"></div>
         <div class="field"><label>Statut</label><input type="text" id="f_statut"></div>
         <div class="field"><label>Localisation</label><input type="text" id="f_localisation"></div>
-        <div class="field"><label>Activité</label><input type="text" id="f_activite"></div>
+        <div class="field"><label>Activité</label><input type="text" id="f_activité"></div>
         <div class="field"><label>Affiliations</label><input type="text" id="f_affiliations"></div>
         
         <div class="field"><label>Famille</label><input type="text" id="f_famille"></div>
@@ -26,7 +26,7 @@
         <div class="field"><label>Relations</label><input type="text" id="f_relations"></div>
         <div class="field"><label>Ennemis</label><input type="text" id="f_ennemis"></div>
         
-        <div class="field"><label>Interprète (Faceclaim)</label><input type="text" id="f_interprete"></div>
+        <div class="field"><label>Interprète (Faceclaim)</label><input type="text" id="f_interprète"></div>
         <div class="field"><label>Roleplayer</label><input type="text" id="f_roleplayer"></div>
         
         <div class="field"><label>Histoire complète</label><textarea id="f_histoire_complete" rows="6"></textarea></div>
@@ -37,10 +37,11 @@
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Modification ici : supabaseClient pour éviter le crash
+        // LA CORRECTION EST ICI : on utilise supabaseClient
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         async function publierFiche() {
+            // On récupère les infos du formulaire
             const dataForm = {
                 nom: document.getElementById('f_nom').value,
                 image_url: document.getElementById('f_image_url').value,
@@ -50,24 +51,26 @@
                 situation: document.getElementById('f_situation').value,
                 statut: document.getElementById('f_statut').value,
                 localisation: document.getElementById('f_localisation').value,
-                activité: document.getElementById('f_activite').value, 
+                activité: document.getElementById('f_activité').value, 
                 famille: document.getElementById('f_famille').value,
                 amis: document.getElementById('f_amis').value,
                 relations: document.getElementById('f_relations').value,
                 ennemis: document.getElementById('f_ennemis').value,
                 affiliations: document.getElementById('f_affiliations').value,
-                interprète: document.getElementById('f_interprete').value, 
+                interprète: document.getElementById('f_interprète').value, 
                 roleplayer: document.getElementById('f_roleplayer').value,
-                histoire_complète: document.getElementById('f_histoire_complete').value 
+                histoire_complète: document.getElementById('f_histoire_complète').value 
             };
 
-            // Utilisation de supabaseClient pour l'insertion
+            // LA CORRECTION EST ICI AUSSI : on envoie via supabaseClient
             const { error } = await supabaseClient.from('personnages').insert([dataForm]);
             
             if (error) { 
                 alert("ERREUR: " + error.message); 
+                console.error(error);
             } else { 
                 alert("SUCCÈS: Dossier du sujet créé et synchronisé avec ARK."); 
+                // Vider les cases après envoi pour montrer que ça a marché
                 document.querySelectorAll('input, textarea').forEach(el => el.value = '');
             }
         }

@@ -6,10 +6,17 @@
     <title>Registre Central</title>
 </head>
 <body>
-    <div class="container">
+    <div class="container" style="padding-bottom: 60px;"> <!-- J'ai ajouté un peu d'espace en bas pour que les mentions ne cachent pas la dernière carte -->
         <h1>REGISTRE DES SUJETS</h1>
         <div class="roster-grid" id="grille-dynamique">Chargement des données ARK...</div>
     </div>
+    
+    <!-- DÉBUT DES MENTIONS LÉGALES -->
+    <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0a0a0a; border-top: 1px solid #333; color: #555; font-size: 0.7em; text-align: center; padding: 10px 0; z-index: 1000; font-family: monospace;">
+        <p style="margin: 2px 0;"><strong>Mentions Légales :</strong> Ce registre "ARK" est édité à titre personnel par [Ton Pseudo]. Contact : [Ton Email].</p>
+        <p style="margin: 2px 0;">Hébergement : GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA).</p>
+    </div>
+    <!-- FIN DES MENTIONS LÉGALES -->
     
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>

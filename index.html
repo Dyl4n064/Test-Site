@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Connexion</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background-color: #0d0e12;
+            color: #d1d5db;
+            font-family: 'Courier New', Courier, monospace;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Effet balayage écran CRT rétro-futuriste */
+        body::before {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            z-index: 10;
+            background-size: 100% 4px, 6px 100%;
+            pointer-events: none;
+        }
+
+        .terminal-box {
+            width: 90%;
+            max-width: 550px;
+            background: rgba(17, 24, 39, 0.85);
+            border: 2px solid #00ff66;
+            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+            padding: 30px;
+            text-align: center;
+            border-radius: 4px;
+            z-index: 5;
+        }
+
+        h1 {
+            font-size: 1.6rem;
+            color: #00ff66;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+        }
+
+        .subtitle {
+            font-size: 0.9rem;
+            color: #9ca3af;
+            margin-bottom: 40px;
+            text-transform: uppercase;
+        }
+
+        /* Bouton Terminal */
+        .terminal-btn {
+            background: transparent;
+            color: #00ff66;
+            border: 2px solid #00ff66;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            font-family: 'Courier New', Courier, monospace;
+            font-weight: bold;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            outline: none;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .terminal-btn:hover {
+            background: #00ff66;
+            color: #0d0e12;
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+        }
+
+        /* Zone de chargement cachée au début */
+        .loading-zone {
+            display: none;
+            margin-top: 20px;
+        }
+
+        .status-text {
+            font-size: 0.9rem;
+            color: #00ff66;
+            margin-bottom: 12px;
+            text-align: left;
+            height: 20px;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 24px;
+            border: 1px solid #00ff66;
+            padding: 2px;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-bar {
+            width: 0%;
+            height: 100%;
+            background-color: #00ff66;
+            box-shadow: 0 0 10px rgba(0, 255, 102, 0.8);
+            transition: width 0.1s linear;
+        }
+
+        .percentage {
+            margin-top: 10px;
+            font-size: 1rem;
+            color: #00ff66;
+            text-align: right;
+        }
+
+        /* =========================================
+           MODE TÉLÉPHONE (Responsive Design)
+           S'active sous 600 pixels de large
+           ========================================= */
+        @media screen and (max-width: 600px) {
+            .terminal-box {
+                width: 95%;
+                padding: 20px; /* Moins d'espace perdu sur les bords */
+            }
+
+            h1 {
+                font-size: 1.2rem; /* Titre plus compact */
+            }
+
+            .subtitle {
+                font-size: 0.8rem;
+                margin-bottom: 30px;
+            }
+
+            .terminal-btn {
+                width: 100%; /* Le bouton prend toute la largeur pour être facilement tapoté */
+                padding: 12px 10px;
+                font-size: 0.95rem;
+            }
+
+            .status-text {
+                font-size: 0.8rem; /* Texte plus petit pour qu'il rentre */
+                height: auto; /* Permet au texte de passer sur deux lignes si besoin */
+                min-height: 35px; /* Évite que la barre saute si le texte passe à la ligne */
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="terminal-box">
+        <h1>Accès au système de sécurité</h1>
+        <p class="subtitle">Base de données confidentielle</p>
+        
+        <!-- Bouton d'entrée -->
+        <button id="entry-btn" class="terminal-btn" onclick="demarrerChargement()">Initialiser la connexion</button>
+        
+        <!-- Conteneur de chargement -->
+        <div id="loading-zone" class="loading-zone">
+            <div id="status-text" class="status-text">Initialisation du protocole...</div>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+            <div id="percentage" class="percentage">0%</div>
+        </div>
+    </div>
+
+    <script>
+        // Liste des messages système pour l'immersion RP
+        const messages = [
+            "Connexion au serveur sécurisé...",
+            "Contournement des protocoles de sécurité...",
+            "Déchiffrement des dossiers des sujets...",
+            "Vérification de l'intégrité des données...",
+            "Synchronisation finale..."
+        ];
+
+        function demarrerChargement() {
+            // Masquer le bouton d'entrée
+            document.getElementById('entry-btn').style.display = 'none';
+            
+            // Afficher la barre de chargement
+            const loadingZone = document.getElementById('loading-zone');
+            loadingZone.style.display = 'block';
+            
+            const progressBar = document.getElementById('progress-bar');
+            const statusText = document.getElementById('status-text');
+            const percentageText = document.getElementById('percentage');
+            
+            let progress = 0;
+            
+            // Intervalle de progression de la barre
+            const interval = setInterval(() => {
+                progress += 1;
+                progressBar.style.width = progress + '%';
+                percentageText.innerText = progress + '%';
+                
+                // Mettre à jour les messages d'ambiance selon l'avancement
+                if (progress === 20) statusText.innerText = messages[0];
+                if (progress === 45) statusText.innerText = messages[1];
+                if (progress === 65) statusText.innerText = messages[2];
+                if (progress === 85) statusText.innerText = messages[3];
+                if (progress === 95) statusText.innerText = messages[4];
+                
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    statusText.innerText = "Accès accordé !";
+                    
+                    // Redirection vers l'index après une mini pause de confort
+                    setTimeout(() => {
+                        window.location.href = 'registre.html'; 
+                    }, 800);
+                }
+            }, 100); // <-- (40ms = environ 4 secondes de chargement au total)
+        }
+    </script>
+</body>
+</html>

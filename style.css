@@ -38,6 +38,28 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
 .card:hover { box-shadow: 0 0 15px var(--accent-color); }
 .status-decédé { border-color: var(--danger-color); color: var(--danger-color); }
 
-.profile-layout { display: flex; gap: 30px; flex-wrap: wrap; }
+.profile-layout { 
+    display: flex; 
+    gap: 30px; 
+    flex-wrap: wrap; 
+    margin-top: 20px;
+}
+
+.profile-layout main {
+    flex: 1;
+    min-width: 280px;
+    animation: slide-in-left 0.8s ease-out 0.3s both;
+}
 .infobox { width: 300px; border: 1px solid var(--border-color); padding: 15px; }
 .data-scan p { border-bottom: 1px solid #222; padding: 5px 0; font-size: 0.9em; }
+
+@keyframes slide-in-left {
+    0% {
+        transform: translateX(-50px);
+        opacity: 0;
+    }
+    100% {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}

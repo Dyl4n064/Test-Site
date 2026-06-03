@@ -63,3 +63,17 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
         opacity: 1;
     }
 }
+
+.data-scan label {
+    display: block;
+    color: var(--accent-color);
+    font-size: 0.8em;
+    margin-top: 8px;
+    text-transform: uppercase;
+}
+
+#btn_mode:hover {
+    box-shadow: 0 0 12px var(--accent-color);
+    background-color: #fff;
+    color: #000;
+}

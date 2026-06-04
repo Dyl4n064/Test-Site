@@ -1,25 +1,122 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><meta charset="UTF-8"><link rel="stylesheet" href="style.css"><title>Registre Biologique</title></head>
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css">
+    <title>Registre Biologique</title>
+    
+    <style>
+        /* Effet de glissement pour le bouton d'enregistrement */
+        .btn-enregistrer {
+            position: relative;
+            left: 0;
+            transition: left 0.3s ease !important; 
+        }
+        .btn-enregistrer:hover {
+            left: 15px; 
+        }
+        
+        /* Style "Terminal" pour les séparateurs de rubriques */
+        .categorie-titre {
+            color: var(--accent-color, #ff0000);
+            border-bottom: 1px solid var(--accent-color, #ff0000);
+            padding-bottom: 5px;
+            margin-top: 50px;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
 <body>
-    <div class="container">
+    <div class="container" style="padding-bottom: 60px;">
+        
+        <div class="terminal-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-retour" onclick="window.location.href='registre.html'" style="width: auto; padding: 7px 15px;">[RETOUR]</button>
+            <button class="btn-retour btn-enregistrer" onclick="window.location.href='create_souche.html'" style="width: auto; padding: 7px 15px;">[NOUVEL ENREGISTREMENT]</button>
+        </div>
+
         <h1>BASE DE DONNÉES PATHOGÈNES</h1>
-        <div class="roster-grid" id="grille-souches">Chargement...</div>
+        
+        <div id="contenu-souches">Chargement de la base de données...</div>
     </div>
+    
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         async function chargerSouches() {
-            const { data: s } = await supabase.from('souches').select('*');
-            document.getElementById('grille-souches').innerHTML = s.map(souche => `
-                <a href="fiche_souche.html?id=${souche.id}" class="card">
-                    <h3>${souche.nom}</h3>
-                    <p>TYPE: ${souche.type}</p>
-                    <p>DANGER: ${souche.dangerosite}</p>
-                </a>
-            `).join('');
+            // 1. Récupération des données triées par ordre alphabétique
+            const { data: s, error } = await supabaseClient
+                .from('souches')
+                .select('*')
+                .order('nom', { ascending: true });
+            
+            if (error) {
+                console.error("Erreur de connexion :", error);
+                document.getElementById('contenu-souches').innerHTML = "<p>Erreur de connexion à la base de données.</p>";
+                return;
+            }
+
+            // 2. Préparation des rubriques dans l'ordre demandé
+            const categories = [
+                { id: 'viral', titre: 'VIRAL', items: [] },
+                { id: 'parasitaire', titre: 'PARASITAIRE', items: [] },
+                { id: 'fongique', titre: 'FONGIQUE', items: [] },
+                { id: 'armes', titre: 'ARMES BIOLOGIQUES', items: [] },
+                { id: 'vaccins', titre: 'VACCINS', items: [] },
+                { id: 'autres', titre: 'AUTRES DOSSIERS', items: [] } // Sécurité si le type n'est pas reconnu
+            ];
+
+            // 3. Tri des souches dans les bonnes catégories
+            s.forEach(souche => {
+                const type = (souche.type || '').toLowerCase();
+                
+                // On utilise 'includes' pour capter des variantes (ex: "Virus" ou "Viral")
+                if (type.includes('viral') || type.includes('virus')) {
+                    categories[0].items.push(souche);
+                } else if (type.includes('parasit')) {
+                    categories[1].items.push(souche);
+                } else if (type.includes('fongique') || type.includes('champignon')) {
+                    categories[2].items.push(souche);
+                } else if (type.includes('arme') || type.includes('b.o.w') || type.includes('bow')) {
+                    categories[3].items.push(souche);
+                } else if (type.includes('vaccin') || type.includes('remède') || type.includes('remede')) {
+                    categories[4].items.push(souche);
+                } else {
+                    categories[5].items.push(souche);
+                }
+            });
+
+            // 4. Construction du code HTML final
+            let htmlOutput = '';
+            
+            categories.forEach(cat => {
+                // On affiche la catégorie uniquement si elle contient au moins une fiche
+                if (cat.items.length > 0) {
+                    htmlOutput += `<h2 class="categorie-titre">> ${cat.titre}</h2>`;
+                    htmlOutput += `<div class="roster-grid">`;
+                    
+                    htmlOutput += cat.items.map(souche => `
+                        <a href="fiche_souche.html?id=${souche.id}" class="card" style="display: block; text-decoration: none; color: inherit;">
+                            <h3 style="margin: 10px 0 5px 0;">${souche.nom}</h3>
+                            <p style="font-size: 0.9em; color: #aaa;">TYPE: ${souche.type}</p>
+                            <p style="font-size: 0.9em; color: #aaa;">DANGER: ${souche.dangerosite}</p>
+                        </a>
+                    `).join('');
+                    
+                    htmlOutput += `</div>`;
+                }
+            });
+
+            if(htmlOutput === '') {
+                htmlOutput = "<p>Aucun pathogène détecté dans la base.</p>";
+            }
+
+            document.getElementById('contenu-souches').innerHTML = htmlOutput;
         }
+        
         chargerSouches();
     </script>
 </body>

@@ -1,5 +1,10 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
+/* Sécurité globale pour éviter que les marges internes cassent la largeur sur mobile */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
 :root {
     --bg-color: #0d1117;
     --border-color: #30363d;
@@ -25,17 +30,19 @@ body::before {
     pointer-events: none; z-index: 999;
 }
 
-.container { max-width: 900px; margin: auto; border: 1px solid var(--border-color); padding: 25px; background: rgba(0, 0, 0, 0.6); }
+.container { max-width: 900px; margin: auto; border: 1px solid var(--border-color); padding: 25px; background: rgba(0, 0, 0, 0.6); width: 100%; }
 
-/* BARRE DE NAVIGATION EN-TÊTE */
+/* BARRE DE NAVIGATION EN-TÊTE ADAPTATIVE */
 .terminal-header {
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
+    align-items: center;
     margin-bottom: 20px;
+    gap: 15px;
 }
+.terminal-header h2, .terminal-header p { margin: 0; font-size: 1.1em; }
 
-/* ANIMATION BOUTON RETOUR */
+/* ANIMATION FLUIDE DU BOUTON RETOUR */
 .btn-retour {
     transition: all 0.3s ease; 
 }
@@ -53,9 +60,38 @@ input, textarea { width: 100%; background: #000; border: 1px solid var(--border-
 button { background: var(--accent-color); color: #000; border: none; padding: 15px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s; }
 
 .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
-.card { border: 1px solid var(--accent-color); padding: 10px; color: var(--text-color); text-decoration: none; display: block; transition: 0.3s; }
+.card { border: 1px solid var(--accent-color); padding: 10px; color: var(--text-color); text-decoration: none; display: block; transition: 0.3s; text-align: center; }
 .card:hover { box-shadow: 0 0 15px var(--accent-color); }
 .status-decédé { border-color: var(--danger-color); color: var(--danger-color); }
+
+/* STRUCTURES DES GRILLES DE MENUS SANS LARGEUR FIXE COUPE-MOBILES */
+.menu-grid {
+    margin-top: 40px;
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.menu-grid .card { width: 200px; }
+
+.submenu-grid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+.submenu-grid .card { width: 180px; text-decoration: none; color: inherit; }
+
+/* BOÎTE DE CONSOLE POP-UP */
+.workspace-modal {
+    text-align: center;
+    background: #0c0c0c;
+    border: 1px solid #333;
+    padding: 40px;
+    max-width: 800px;
+    width: 100%;
+    box-shadow: 0 0 30px rgba(0,0,0,0.9);
+}
 
 .profile-layout { 
     display: flex; 
@@ -73,14 +109,8 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
 .data-scan p { border-bottom: 1px solid #222; padding: 5px 0; font-size: 0.9em; }
 
 @keyframes slide-in-left {
-    0% {
-        transform: translateX(-50px);
-        opacity: 0;
-    }
-    100% {
-        transform: translateX(0);
-        opacity: 1;
-    }
+    0% { transform: translateX(-50px); opacity: 0; }
+    100% { transform: translateX(0); opacity: 1; }
 }
 
 .data-scan label {
@@ -97,32 +127,51 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     color: #000;
 }
 
-/* ==========================================================================
-   ANIMATIONS DÉDIÉES À LA CONSOLE SÉCURISÉE ET AUX SOUS-CARTES
-   ========================================================================== */
-
-/* Zoom mécanique type "ressort" */
+/* ANIMATION TYPE "RESSORT" À L'OUVERTURE */
 @keyframes zoomAvant {
-    from {
-        transform: scale(0.4);
-        opacity: 0;
-    }
-    to {
-        transform: scale(1);
-        opacity: 1;
-    }
+    from { transform: scale(0.4); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
 }
+.modal-zoom { animation: zoomAvant 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards; }
 
-.modal-zoom {
-    animation: zoomAvant 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.15) forwards;
-}
-
-/* Effet de lévitation et lueur progressive pour les sous-rubriques */
-.sub-card {
-    transition: all 0.25s ease-in-out !important;
-}
+/* COMPORTEMENT ET LÉVITATION AU SURVOL DES SOUS-RUBRIQUES */
+.sub-card { transition: all 0.25s ease-in-out !important; }
 .sub-card:hover {
     transform: translateY(-8px); 
     border-color: var(--accent-color) !important; 
     box-shadow: 0 0 15px var(--accent-color) !important; 
+}
+
+/* ==========================================================================
+   BLOC MULTI-ÉCRAN (MEDIA QUERIES) : S'ACTIVE SUR ÉCRANS INFERIEURS À 650PX
+   ========================================================================== */
+@media (max-width: 650px) {
+    body { padding: 15px; }
+    .container { padding: 15px; }
+    
+    /* L'en-tête s'aligne verticalement pour éviter les chevauchements textuels */
+    .terminal-header {
+        flex-direction: column;
+        text-align: center;
+        gap: 8px;
+    }
+    
+    /* Les blocs de cartes se rangent en liste verticale propre */
+    .menu-grid, .submenu-grid {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+    .menu-grid .card, .submenu-grid .card {
+        width: 100%;
+        max-width: 320px; /* Taille parfaite pour le clic tactile */
+    }
+    
+    /* Élimination des marges superflues pour maximiser l'espace écran mobile */
+    .workspace-modal {
+        padding: 25px 15px;
+    }
+    .workspace-modal h1 {
+        font-size: 1.3em !important;
+    }
 }

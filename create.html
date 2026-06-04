@@ -37,11 +37,9 @@
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // LA CORRECTION EST ICI : on utilise supabaseClient
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         async function publierFiche() {
-            // On récupère les infos du formulaire
             const dataForm = {
                 nom: document.getElementById('f_nom').value,
                 image_url: document.getElementById('f_image_url').value,
@@ -62,16 +60,23 @@
                 histoire_complète: document.getElementById('f_histoire_complète').value 
             };
 
-            // LA CORRECTION EST ICI AUSSI : on envoie via supabaseClient
-            const { error } = await supabaseClient.from('personnages').insert([dataForm]);
+            // MODIFICATION ICI : On ajoute .select() pour obtenir les données générées
+            const { data, error } = await supabaseClient
+                .from('personnages')
+                .insert([dataForm])
+                .select(); 
             
             if (error) { 
                 alert("ERREUR: " + error.message); 
                 console.error(error);
             } else { 
                 alert("SUCCÈS: Dossier du sujet créé et synchronisé avec ARK."); 
-                // Vider les cases après envoi pour montrer que ça a marché
-                document.querySelectorAll('input, textarea').forEach(el => el.value = '');
+                
+                // On récupère l'ID automatique donné par Supabase à la nouvelle ligne
+                const nouvelId = data[0].id;
+                
+                // Redirection vers la nouvelle fiche
+                window.location.href = 'fiche.html?id=' + nouvelId; 
             }
         }
     </script>

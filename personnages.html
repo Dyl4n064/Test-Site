@@ -2,49 +2,33 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Registre Central</title>
-    
-    <style>
-        .btn-enregistrer {
-            position: relative;
-            left: 0;
-            /* Le transition permet un mouvement fluide et doux (0.3 secondes) */
-            transition: left 0.3s ease !important; 
-        }
-        .btn-enregistrer:hover {
-            /* Décale le bouton de 15 pixels vers la droite au survol de la souris */
-            left: 15px; 
-        }
-    </style>
 </head>
 <body>
-    <div class="container" style="padding-bottom: 60px;"> <!-- J'ai ajouté un peu d'espace en bas pour que les mentions ne cachent pas la dernière carte -->
+    <div class="container container-roster"> 
 
         <div class="terminal-header">
-            <button class="btn-retour" onclick="window.location.href='registre.html'" style="width: auto; padding: 7px 15px;">[RETOUR]</button>
-            <button class="btn-retour btn-enregistrer" onclick="window.location.href='create.html'" style="width: auto; padding: 7px 15px;">[NOUVEL ENREGISTREMENT]</button>
+            <button class="btn-retour" onclick="window.location.href='registre.html'">[RETOUR]</button>
+            <button class="btn-retour btn-enregistrer" onclick="window.location.href='create.html'">[NOUVEL ENREGISTREMENT]</button>
         </div>
         
         <h1>REGISTRE DES SUJETS</h1>
         <div class="roster-grid" id="grille-dynamique">Chargement des données...</div>
     </div>
     
-    <!-- DÉBUT DES MENTIONS LÉGALES -->
-    <div style="position: fixed; bottom: 0; left: 0; width: 100%; background-color: #0a0a0a; border-top: 1px solid #333; color: #555; font-size: 0.7em; text-align: center; padding: 10px 0; z-index: 1000; font-family: monospace;">
-        <p style="margin: 2px 0;"><strong>Mentions Légales :</strong> Ce registre est édité à titre personnel par Dyl4n06. Contact : dylancapron064@gmail.com.</p>
-        <p style="margin: 2px 0;">Hébergement : GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA).</p>
+    <div class="mentions-legales">
+        <p><strong>Mentions Légales :</strong> Ce registre est édité à titre personnel par Dyl4n06. Contact : dylancapron064@gmail.com.</p>
+        <p>Hébergement : GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA).</p>
     </div>
-    <!-- FIN DES MENTIONS LÉGALES -->
     
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
-        // Utilisation de supabaseClient pour éviter les bugs de conflit
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         async function chargerRoster() {
-            // Ajout de .order() pour forcer le tri alphabétique sur la colonne 'nom'
             const { data: p, error } = await supabaseClient
                 .from('personnages')
                 .select('*')
@@ -57,16 +41,12 @@
             }
 
             document.getElementById('grille-dynamique').innerHTML = p.map(perso => {
-                // Sécurité pour éviter un crash si la case "statut" est vide
                 const statutTexte = perso.statut ? perso.statut.toLowerCase() : "";
                 const isDead = statutTexte.includes('décédé');
                 
-                // Gestion intelligente de l'image (lien direct ou dossier local)
                 const imageSrc = perso.image_url && perso.image_url.startsWith('http') 
-                    ? perso.image_url 
-                    : `images/${perso.image_url}`;
+                    ? perso.image_url \n                    : `images/${perso.image_url}`;
 
-                // La balise <a> rend toute la carte cliquable (Image + Nom)
                 return `
                     <a href="fiche.html?id=${perso.id}" class="card ${isDead ? 'status-decédé' : ''}" style="display: block; text-decoration: none; color: inherit;">
                         <img src="${imageSrc}" style="width:100%; height:200px; object-fit:cover; border-bottom: 2px solid #555;">

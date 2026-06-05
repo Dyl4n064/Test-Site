@@ -32,6 +32,11 @@ body::before {
 
 .container { max-width: 900px; margin: auto; border: 1px solid var(--border-color); padding: 25px; background: rgba(0, 0, 0, 0.6); width: 100%; }
 
+/* Espace supplémentaire sur la page registre pour éviter la superposition du footer fixe sur PC */
+.container-roster {
+    padding-bottom: 80px;
+}
+
 /* BARRE DE NAVIGATION EN-TÊTE ADAPTATIVE */
 .terminal-header {
     display: flex;
@@ -42,15 +47,28 @@ body::before {
 }
 .terminal-header h2, .terminal-header p { margin: 0; font-size: 1.1em; }
 
-/* ANIMATION FLUIDE DU BOUTON RETOUR */
+/* ANIMATION FLUIDE DES BOUTONS DE L'EN-TÊTE */
 .btn-retour {
     transition: all 0.3s ease; 
+    width: auto; 
+    padding: 7px 15px;
 }
 .btn-retour:hover {
     transform: translateX(-5px);
     box-shadow: -5px 0 15px var(--accent-color) !important;
     background-color: #fff !important;
     color: #000 !important;
+}
+
+/* Animation de décalage spécifique au bouton d'enregistrement au survol */
+.btn-enregistrer {
+    position: relative;
+    left: 0;
+    transition: left 0.3s ease !important; 
+}
+.btn-enregistrer:hover {
+    left: 10px;
+    transform: none; /* Annule le décalage vers la gauche du bouton retour classique */
 }
 
 h1, h2 { color: var(--accent-color); text-transform: uppercase; }
@@ -92,6 +110,23 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     width: 100%;
     box-shadow: 0 0 30px rgba(0,0,0,0.9);
 }
+
+/* ZONE MENTIONS LÉGALES - STYLE BUREAU */
+.mentions-legales {
+    position: fixed; 
+    bottom: 0; 
+    left: 0; 
+    width: 100%; 
+    background-color: #0a0a0a; 
+    border-top: 1px solid #333; 
+    color: #555; 
+    font-size: 0.7em; 
+    text-align: center; 
+    padding: 10px 0; 
+    z-index: 1000; 
+    font-family: monospace;
+}
+.mentions-legales p { margin: 2px 0; }
 
 .profile-layout { 
     display: flex; 
@@ -148,12 +183,20 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
 @media (max-width: 650px) {
     body { padding: 15px; }
     .container { padding: 15px; }
+    .container-roster { padding-bottom: 25px; } /* Plus besoin de grand espace vide en bas sur mobile */
     
     /* L'en-tête s'aligne verticalement pour éviter les chevauchements textuels */
     .terminal-header {
         flex-direction: column;
         text-align: center;
-        gap: 8px;
+        gap: 10px;
+    }
+    
+    /* Les boutons s'alignent proprement en pleine largeur sur mobile */
+    .terminal-header .btn-retour {
+        width: 100%;
+        max-width: 320px;
+        padding: 12px;
     }
     
     /* Les blocs de cartes se rangent en liste verticale propre */
@@ -173,5 +216,14 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     }
     .workspace-modal h1 {
         font-size: 1.3em !important;
+    }
+
+    /* LE SÉCURISATEUR MOBILE : Libère l'espace bloqué en bas de l'écran */
+    .mentions-legales {
+        position: static;
+        margin-top: 40px;
+        border-top: 1px solid var(--border-color);
+        background: transparent;
+        padding: 15px 5px;
     }
 }

@@ -45,7 +45,8 @@
                 const isDead = statutTexte.includes('décédé');
                 
                 const imageSrc = perso.image_url && perso.image_url.startsWith('http') 
-                    ? perso.image_url \n                    : `images/${perso.image_url}`;
+                    ? perso.image_url
+                    : `images/${perso.image_url}`;
 
                 return `
                     <a href="fiche.html?id=${perso.id}" class="card ${isDead ? 'status-decédé' : ''}" style="display: block; text-decoration: none; color: inherit;">

@@ -2,16 +2,16 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Dossier Confidentiel</title>
 </head>
 <body>
     <div class="container">
         
-        <!-- BARRE DE NAVIGATION EN-TÊTE -->
         <div class="terminal-header">
-            <button class="btn-retour" onclick="window.location.href='personnages.html'" style="width: auto; padding: 7px 15px;">[🗁 RETOUR]</button>
-            <button id="btn_mode" onclick="basculerMode()" style="width: auto; padding: 7px 15px;">[ÉDITER LE DOSSIER]</button>
+            <button class="btn-retour" onclick="window.location.href='personnages.html'">[🗁 RETOUR]</button>
+            <button id="btn_mode" class="btn-retour" onclick="basculerMode()">[ÉDITER LE DOSSIER]</button>
         </div>
         
         <h1 id="f_nom">[ACCÈS SÉCURISÉ] // CHARGEMENT...</h1>
@@ -19,18 +19,15 @@
         <div class="profile-layout">
             <aside class="infobox">
                 <img id="f_img" style="width:100%; border: 1px solid #00ff00; margin-bottom: 15px;">
-                <!-- Zone de modification de l'image (cachée par défaut) -->
                 <div id="f_img_edit_container" style="display: none; margin-bottom: 15px;"></div>
                 
                 <div id="f_details" class="data-scan">
-                    <!-- Les données s'injectent ici dynamiquement -->
-                </div>
+                    </div>
             </aside>
             
             <main>
                 <h3>HISTOIRE</h3>
                 <p id="f_histoire">En attente de décryptage des données...</p>
-                <!-- Zone de modification de l'histoire (cachée par défaut) -->
                 <div id="f_histoire_edit_container" style="display: none;">
                     <textarea id="f_histoire_edit" style="width: 100%; min-height: 350px; background: #000; border: 1px solid var(--accent-color); color: #fff; padding: 10px; font-family: 'Share Tech Mono', monospace; box-sizing: border-box;"></textarea>
                 </div>
@@ -102,8 +99,8 @@
             modeEdition = true;
             document.getElementById('btn_mode').innerText = "[SAUVEGARDER LES DONNÉES]";
 
-            // Transformation du titre en champ de saisie
-            document.getElementById('f_nom').innerHTML = `<input id="edit_nom" value="${p.nom || ''}" style="font-size: 24px; color: var(--accent-color); font-family: 'Share Tech Mono', monospace;">`;
+            // Transformation du titre en champ de saisie (avec width 100% pour mobile)
+            document.getElementById('f_nom').innerHTML = `<input id="edit_nom" value="${p.nom || ''}" style="width: 100%; box-sizing: border-box; font-size: 24px; color: var(--accent-color); font-family: 'Share Tech Mono', monospace;">`;
             
             // Affichage du champ pour modifier l'URL de l'image
             document.getElementById('f_img').style.display = 'none';

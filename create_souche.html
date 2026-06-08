@@ -1,33 +1,115 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><meta charset="UTF-8"><link rel="stylesheet" href="style.css"><title>Enregistrement Pathogène</title></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Enregistrement Pathogène</title>
+    <style>
+        .form-section {
+            margin-top: 30px;
+            margin-bottom: 15px;
+            border-bottom: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding-bottom: 5px;
+            font-size: 1.1em;
+            text-transform: uppercase;
+        }
+        .form-section.danger { border-color: var(--danger-color); color: var(--danger-color); }
+        .form-section.warning { border-color: #ffaa00; color: #ffaa00; }
+        .field { margin-bottom: 15px; }
+        .field label { display: block; margin-bottom: 5px; color: #aaa; font-size: 0.9em; }
+    </style>
+</head>
 <body>
     <div class="container">
-        <h1>NOUVEAU PATHOGÈNE</h1>
-        <div class="field"><label>Nom</label><input type="text" id="s_nom"></div>
-        <div class="field"><label>Type</label><input type="text" id="s_type"></div>
-        <div class="field"><label>Origine</label><input type="text" id="s_origine"></div>
-        <div class="field"><label>Dangerosité</label><input type="text" id="s_danger"></div>
+        
+        <div class="terminal-header" style="margin-bottom: 20px;">
+            <button class="btn-retour" onclick="window.location.href='souches.html'" style="width: auto; padding: 7px 15px;">[ANNULER]</button>
+        </div>
+
+        <h1>NOUVEL ENREGISTREMENT</h1>
+
+        <!-- TRONC COMMUN -->
+        <h2 class="form-section">1. INFORMATIONS GÉNÉRALES</h2>
+        <div class="field"><label>Nom de code</label><input type="text" id="s_nom" placeholder="Ex: Virus-T, Tyran T-103..."></div>
+        <div class="field"><label>Type (Crucial pour le tri)</label><input type="text" id="s_type" placeholder="Ex: Viral, Armes biologiques, Vaccins..."></div>
+        <div class="field"><label>Créateur / Origine</label><input type="text" id="s_createur_origine"></div>
+        <div class="field"><label>Statut</label><input type="text" id="s_statut" placeholder="Ex: Actif, Échantillon stocké, Détruit..."></div>
         <div class="field"><label>URL Image</label><input type="text" id="s_img"></div>
-        <div class="field"><label>Description</label><textarea id="s_desc" rows="5"></textarea></div>
-        <button onclick="publierSouche()">VALIDER DANS LA BASE</button>
+        <div class="field"><label>Description globale</label><textarea id="s_desc" rows="4"></textarea></div>
+
+        <!-- VIRUS / PARASITES / CHAMPIGNONS -->
+        <h2 class="form-section warning">2. SPÉCIFICATIONS D'INFECTION (Si applicable)</h2>
+        <div class="field"><label>Dangerosité</label><input type="text" id="s_dangerosite" placeholder="Ex: Extrême, Classe S..."></div>
+        <div class="field"><label>Vecteur d'infection</label><input type="text" id="s_vecteur_infection" placeholder="Ex: Morsure, Voie aérienne..."></div>
+        <div class="field"><label>Temps d'incubation</label><input type="text" id="s_temps_incubation"></div>
+        <div class="field"><label>Symptômes cliniques</label><textarea id="s_symptomes" rows="3"></textarea></div>
+
+        <!-- ARMES BIOLOGIQUES (B.O.W.) -->
+        <h2 class="form-section danger">3. SPÉCIFICATIONS MARTIALES (B.O.W. uniquement)</h2>
+        <div class="field"><label>Intelligence</label><input type="text" id="s_intelligence" placeholder="Ex: Animale, Capable de suivre des ordres..."></div>
+        <div class="field"><label>Capacités physiques</label><input type="text" id="s_capacites" placeholder="Ex: Force surhumaine, Régénération..."></div>
+        <div class="field"><label>Faiblesses</label><input type="text" id="s_faiblesses" placeholder="Ex: Cœur exposé, Sensible au feu..."></div>
+        <div class="field"><label>Méthode de contrôle</label><input type="text" id="s_methode_controle"></div>
+
+        <!-- VACCINS & REMÈDES -->
+        <h2 class="form-section">4. DONNÉES MÉDICALES (Vaccins uniquement)</h2>
+        <div class="field"><label>Pathogène Cible</label><input type="text" id="s_pathogene_cible"></div>
+        <div class="field"><label>Taux d'efficacité</label><input type="text" id="s_taux_efficacite"></div>
+        <div class="field"><label>Effets secondaires</label><input type="text" id="s_effets_secondaires"></div>
+
+        <button onclick="publierSouche()" style="margin-top: 30px;">[ INTÉGRER AU MAINFRAME ]</button>
     </div>
+
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         async function publierSouche() {
+            // Modification du libellé du bouton pendant l'envoi
+            const btn = document.querySelector('button[onclick="publierSouche()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "[ ENVOI EN COURS... ]";
+
             const dataForm = {
+                // Tronc commun
                 nom: document.getElementById('s_nom').value,
                 type: document.getElementById('s_type').value,
-                origine: document.getElementById('s_origine').value,
-                dangerosite: document.getElementById('s_danger').value,
+                createur_origine: document.getElementById('s_createur_origine').value,
+                statut: document.getElementById('s_statut').value,
                 image_url: document.getElementById('s_img').value,
-                description: document.getElementById('s_desc').value
+                description: document.getElementById('s_desc').value,
+                
+                // Infection
+                dangerosite: document.getElementById('s_dangerosite').value,
+                vecteur_infection: document.getElementById('s_vecteur_infection').value,
+                temps_incubation: document.getElementById('s_temps_incubation').value,
+                symptomes: document.getElementById('s_symptomes').value,
+                
+                // B.O.W.
+                intelligence: document.getElementById('s_intelligence').value,
+                capacites: document.getElementById('s_capacites').value,
+                faiblesses: document.getElementById('s_faiblesses').value,
+                methode_controle: document.getElementById('s_methode_controle').value,
+                
+                // Médical
+                pathogene_cible: document.getElementById('s_pathogene_cible').value,
+                taux_efficacite: document.getElementById('s_taux_efficacite').value,
+                effets_secondaires: document.getElementById('s_effets_secondaires').value
             };
+
             const { error } = await supabase.from('souches').insert([dataForm]);
-            if (error) { alert("ERREUR: " + error.message); }
-            else { alert("SUCCÈS: Pathogène enregistré."); }
+            
+            if (error) { 
+                alert("ERREUR SYSTÈME: " + error.message); 
+                btn.innerText = originalText;
+            } else { 
+                alert("SUCCÈS: Données enregistrées dans le registre biologique."); 
+                // Redirection automatique vers la liste après succès
+                window.location.href = 'souches.html';
+            }
         }
     </script>
 </body>

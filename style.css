@@ -140,7 +140,9 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     min-width: 280px;
     animation: slide-in-left 0.8s ease-out 0.3s both;
 }
-.infobox { width: 300px; border: 1px solid var(--border-color); padding: 15px; }
+
+/* Modification ici pour le responsive : ajout de max-width à la place de width fixe */
+.infobox { width: 100%; max-width: 300px; border: 1px solid var(--border-color); padding: 15px; }
 .data-scan p { border-bottom: 1px solid #222; padding: 5px 0; font-size: 0.9em; }
 
 @keyframes slide-in-left {
@@ -156,6 +158,7 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     text-transform: uppercase;
 }
 
+/* Ce hover est couvert par la classe .btn-retour maintenant, mais on le garde en sécurité */
 #btn_mode:hover {
     box-shadow: 0 0 12px var(--accent-color);
     background-color: #fff;
@@ -183,7 +186,7 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
 @media (max-width: 650px) {
     body { padding: 15px; }
     .container { padding: 15px; }
-    .container-roster { padding-bottom: 25px; } /* Plus besoin de grand espace vide en bas sur mobile */
+    .container-roster { padding-bottom: 25px; } 
     
     /* L'en-tête s'aligne verticalement pour éviter les chevauchements textuels */
     .terminal-header {
@@ -207,7 +210,7 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     }
     .menu-grid .card, .submenu-grid .card {
         width: 100%;
-        max-width: 320px; /* Taille parfaite pour le clic tactile */
+        max-width: 320px; 
     }
     
     /* Élimination des marges superflues pour maximiser l'espace écran mobile */
@@ -216,6 +219,11 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     }
     .workspace-modal h1 {
         font-size: 1.3em !important;
+    }
+
+    /* Permet à l'image de profil et aux stats de prendre toute la largeur sur mobile */
+    .infobox {
+        max-width: 100%;
     }
 
     /* LE SÉCURISATEUR MOBILE : Libère l'espace bloqué en bas de l'écran */

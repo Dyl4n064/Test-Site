@@ -9,11 +9,9 @@
 <body>
     <div class="container">
         
-        <div class="terminal-header" style="margin-bottom: 25px;">
-            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                <button class="btn-retour" onclick="window.location.href='souches.html'">[RETOUR]</button>
-                <button id="btn_mode" class="btn-retour" onclick="basculerMode()">[ÉDITER LA FICHE]</button>
-            </div>
+        <div class="terminal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+            <button class="btn-retour" onclick="window.location.href='souches.html'">[RETOUR]</button>
+            <button id="btn_mode" class="btn-retour" onclick="basculerMode()">[ÉDITER LA FICHE]</button>
         </div>
 
         <div class="profile-layout">
@@ -229,7 +227,7 @@
                 statut: document.getElementById('edit_statut').value
             };
 
-            // Collecte conditionnelle des champs spécifiques selon la catégorie affichée
+            // Collecte conditionnelle des champs spécifiques selon la catégorie
             if (typeActuel.includes('vaccin') || typeActuel.includes('remède') || typeActuel.includes('remede')) {
                 modifications.pathogene_cible = document.getElementById('edit_pathogene_cible').value;
                 modifications.taux_efficacite = document.getElementById('edit_taux_efficacite').value;
@@ -247,15 +245,14 @@
                 modifications.symptomes = document.getElementById('edit_symptomes').value;
             }
 
-            // Push vers la base de données Supabase
+            // Envoi vers Supabase
             const { error } = await supabaseClient.from('souches').update(modifications).eq('id', id);
 
             if (error) {
-                alert("ÉCHEC DE LA SYNCHRONISATION : Accès refusé ou erreur serveur.");
+                alert("ÉCHEC DE LA SYNCHRONISATION : Erreur serveur.");
                 console.error(error);
                 btn.innerText = "[RETENUE DE SÉCURITÉ : RÉESSAYER]";
             } else {
-                // Application locale et retour à l'affichage fixe
                 s = { ...s, ...modifications };
                 afficherModeLecture();
             }

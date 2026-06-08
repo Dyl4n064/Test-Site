@@ -1,35 +1,117 @@
 <!DOCTYPE html>
 <html lang="fr">
-<head><meta charset="UTF-8"><link rel="stylesheet" href="style.css"><title>Dossier Pathogène</title></head>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Dossier Pathogène</title>
+</head>
 <body>
     <div class="container">
-        <h1 id="s_nom">Chargement...</h1>
+        
+        <div class="terminal-header">
+            <button class="btn-retour" onclick="window.location.href='souches.html'">[RETOUR]</button>
+            <h2 id="s_nom">Chargement...</h2>
+        </div>
+
         <div class="profile-layout">
             <aside class="infobox">
-                <img id="s_img" style="width:100%">
-                <div class="data-scan" id="s_details"></div>
+                <img id="s_img" style="width:100%; border-bottom: 2px solid var(--accent-color); margin-bottom: 10px;">
+                <div class="data-scan" id="s_details">
+                    <!-- Tronc commun injecté ici -->
+                </div>
             </aside>
+            
             <main>
-                <h3>DESCRIPTION TECHNIQUE</h3>
+                <h3 style="color: var(--accent-color);">DESCRIPTION GÉNÉRALE</h3>
                 <p id="s_desc"></p>
+
+                <!-- Zone dynamique injectée via JavaScript -->
+                <div id="zone_specifique" style="margin-top: 30px; padding-top: 20px; border-top: 1px dashed var(--border-color);">
+                </div>
             </main>
         </div>
     </div>
+
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
         async function chargerFiche() {
             const id = new URLSearchParams(window.location.search).get('id');
-            const { data: s } = await supabase.from('souches').select('*').eq('id', id).single();
-            document.getElementById('s_nom').innerText = s.nom;
-            document.getElementById('s_img').src = s.image_url;
-            document.getElementById('s_desc').innerText = s.description;
+            const { data: s, error } = await supabase.from('souches').select('*').eq('id', id).single();
+            
+            if (error) {
+                document.getElementById('s_nom').innerText = "ERREUR SYSTÈME";
+                return;
+            }
+
+            // 1. Remplissage du tronc commun
+            document.getElementById('s_nom').innerText = s.nom || 'Inconnu';
+            document.getElementById('s_img').src = s.image_url || 'default.jpg';
+            document.getElementById('s_desc').innerText = s.description || 'Aucune description disponible.';
+            
             document.getElementById('s_details').innerHTML = `
-                <p>TYPE: ${s.type}</p>
-                <p>ORIGINE: ${s.origine}</p>
-                <p>DANGER: ${s.dangerosite}</p>`;
+                <label>CLASSIFICATION</label>
+                <p>${s.type || 'Inconnue'}</p>
+                <label>ORIGINE / CRÉATEUR</label>
+                <p>${s.createur_origine || 'Inconnu'}</p>
+                <label>STATUT ACTUEL</label>
+                <p>${s.statut || 'Non défini'}</p>
+            `;
+
+            // 2. Logique d'affichage dynamique
+            const type = (s.type || '').toLowerCase();
+            let htmlSpecifique = '';
+
+            if (type.includes('vaccin') || type.includes('remède') || type.includes('remede')) {
+                htmlSpecifique = `
+                    <h3 style="color: var(--accent-color);">DONNÉES MÉDICALES</h3>
+                    <div class="data-scan">
+                        <label>PATHOGÈNE CIBLE</label>
+                        <p>${s.pathogene_cible || 'Inconnu'}</p>
+                        <label>TAUX D'EFFICACITÉ</label>
+                        <p>${s.taux_efficacite || 'En cours d\'évaluation'}</p>
+                        <label>EFFETS SECONDAIRES</label>
+                        <p>${s.effets_secondaires || 'Aucun'}</p>
+                    </div>
+                `;
+            } else if (type.includes('arme') || type.includes('b.o.w') || type.includes('bow')) {
+                htmlSpecifique = `
+                    <h3 style="color: var(--danger-color);">SPÉCIFICATIONS MARTIALES</h3>
+                    <div class="data-scan">
+                        <label>NIVEAU DE MENACE</label>
+                        <p style="color: var(--danger-color);">${s.dangerosite || 'Inconnu'}</p>
+                        <label>INTELLIGENCE</label>
+                        <p>${s.intelligence || 'Inconnue'}</p>
+                        <label>CAPACITÉS PHYSIQUES</label>
+                        <p>${s.capacites || 'Non documentées'}</p>
+                        <label>FAIBLESSES EXPLOITABLES</label>
+                        <p>${s.faiblesses || 'Inconnues'}</p>
+                        <label>MÉTHODE DE CONTRÔLE</label>
+                        <p>${s.methode_controle || 'Instable'}</p>
+                    </div>
+                `;
+            } else {
+                htmlSpecifique = `
+                    <h3 style="color: #ffaa00;">VECTEUR D'INFECTION</h3>
+                    <div class="data-scan">
+                        <label>NIVEAU DE MENACE</label>
+                        <p style="color: #ffaa00;">${s.dangerosite || 'Inconnu'}</p>
+                        <label>MÉTHODE DE TRANSMISSION</label>
+                        <p>${s.vecteur_infection || 'Inconnue'}</p>
+                        <label>TEMPS D'INCUBATION</label>
+                        <p>${s.temps_incubation || 'Variable'}</p>
+                        <label>SYMPTÔMES CLINIQUES</label>
+                        <p>${s.symptomes || 'Non documentés'}</p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('zone_specifique').innerHTML = htmlSpecifique;
         }
+        
         chargerFiche();
     </script>
 </body>

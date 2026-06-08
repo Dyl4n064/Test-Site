@@ -66,14 +66,13 @@
                 { id: 'fongique', titre: 'FONGIQUE', items: [] },
                 { id: 'armes', titre: 'ARMES BIOLOGIQUES', items: [] },
                 { id: 'vaccins', titre: 'VACCINS', items: [] },
-                { id: 'autres', titre: 'AUTRES DOSSIERS', items: [] } // Sécurité si le type n'est pas reconnu
+                { id: 'autres', titre: 'AUTRES DOSSIERS', items: [] }
             ];
 
             // 3. Tri des souches dans les bonnes catégories
             s.forEach(souche => {
                 const type = (souche.type || '').toLowerCase();
                 
-                // On utilise 'includes' pour capter des variantes (ex: "Virus" ou "Viral")
                 if (type.includes('viral') || type.includes('virus')) {
                     categories[0].items.push(souche);
                 } else if (type.includes('parasit')) {
@@ -93,18 +92,25 @@
             let htmlOutput = '';
             
             categories.forEach(cat => {
-                // On affiche la catégorie uniquement si elle contient au moins une fiche
                 if (cat.items.length > 0) {
                     htmlOutput += `<h2 class="categorie-titre">> ${cat.titre}</h2>`;
                     htmlOutput += `<div class="roster-grid">`;
                     
-                    htmlOutput += cat.items.map(souche => `
-                        <a href="fiche_souche.html?id=${souche.id}" class="card" style="display: block; text-decoration: none; color: inherit;">
-                            <h3 style="margin: 10px 0 5px 0;">${souche.nom}</h3>
-                            <p style="font-size: 0.9em; color: #aaa;">TYPE: ${souche.type}</p>
-                            <p style="font-size: 0.9em; color: #aaa;">DANGER: ${souche.dangerosite}</p>
-                        </a>
-                    `).join('');
+                    htmlOutput += cat.items.map(souche => {
+                        // REPRISE EXACTE DE LA LOGIQUE DE DECOUPAGE DES LIENS DE PERSONNAGES.HTML
+                        const imageSrc = souche.image_url && souche.image_url.startsWith('http') 
+                            ? souche.image_url
+                            : `images/${souche.image_url || 'default.jpg'}`;
+
+                        return `
+                            <a href="fiche_souche.html?id=${souche.id}" class="card" style="display: block; text-decoration: none; color: inherit;">
+                                <img src="${imageSrc}" style="width:100%; height:200px; object-fit:cover; border-bottom: 2px solid #555;">
+                                <h3 style="margin: 10px 0 5px 0;">${souche.nom}</h3>
+                                <p style="font-size: 0.9em; color: #aaa; margin: 5px 0;">TYPE: ${souche.type || "Inconnu"}</p>
+                                <p style="font-size: 0.9em; color: #aaa; margin: 5px 0;">DANGER: ${souche.dangerosite || "Non défini"}</p>
+                            </a>
+                        `;
+                    }).join('');
                     
                     htmlOutput += `</div>`;
                 }

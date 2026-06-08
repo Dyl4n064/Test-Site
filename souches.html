@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
     <title>Registre Biologique</title>
     
@@ -39,6 +40,11 @@
         <h1>BASE DE DONNÉES PATHOGÈNES</h1>
         
         <div id="contenu-souches">Chargement de la base de données...</div>
+    </div>
+    
+    <div class="mentions-legales">
+        <p><strong>Mentions Légales :</strong> Ce registre est édité à titre personnel par Dyl4n06. Contact : dylancapron064@gmail.com.</p>
+        <p>Hébergement : GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA).</p>
     </div>
     
     <script src="config.js"></script>
@@ -97,7 +103,6 @@
                     htmlOutput += `<div class="roster-grid">`;
                     
                     htmlOutput += cat.items.map(souche => {
-                        // REPRISE EXACTE DE LA LOGIQUE DE DECOUPAGE DES LIENS DE PERSONNAGES.HTML
                         const imageSrc = souche.image_url && souche.image_url.startsWith('http') 
                             ? souche.image_url
                             : `images/${souche.image_url || 'default.jpg'}`;

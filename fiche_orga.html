@@ -9,32 +9,28 @@
 <body>
     <div class="container container-roster">
         
-        <div class="terminal-header" style="margin-bottom: 20px;">
+        <!-- En-tête avec les deux boutons, alignés et espacés comme sur la fiche souche[cite: 6] -->
+        <div class="terminal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
             <button class="btn-retour" onclick="window.location.href='organisations.html'" style="width: auto; padding: 7px 15px;">[RETOUR]</button>
-            <button class="btn-retour btn-enregistrer" id="btn_edit" style="width: auto; padding: 7px 15px;" onclick="window.location.href='edit_orga.html?id=' + new URLSearchParams(window.location.search).get('id')">[MODIFIER]</button>
+            <button id="btn_mode" class="btn-retour btn-enregistrer" onclick="basculerMode()" style="width: auto; padding: 7px 15px;">[ÉDITER LA FICHE]</button>
         </div>
-
-        <h1 id="orga_nom">CHARGEMENT...</h1>
 
         <div class="profile-layout" style="display: none;" id="content_layout">
             <aside class="infobox">
-                <img id="orga_img" src="" alt="Logo" style="width:100%; max-height:250px; object-fit:contain; background:#000; border-bottom:1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
-                <div class="data-scan">
-                    <label>TYPE</label>
-                    <p id="orga_type">-</p>
-                    <label>STATUT</label>
-                    <p id="orga_statut">-</p>
-                    <label>ANNÉE DE FONDATION</label>
-                    <p id="orga_fondation">-</p>
-                    <label>FONDATEUR(S)</label>
-                    <p id="orga_fondateurs">-</p>
-                    <label>QUARTIER GÉNÉRAL</label>
-                    <p id="orga_qg">-</p>
+                <!-- ID de chargement du nom[cite: 6] -->
+                <h2 id="o_nom" style="text-align: center; margin-top: 0; margin-bottom: 15px; word-wrap: break-word;">CHARGEMENT...</h2>
+                
+                <img id="o_img" src="" alt="Logo" style="width:100%; max-height:250px; object-fit:contain; background:#000; border-bottom:1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                
+                <!-- Zone des détails dynamiques[cite: 6] -->
+                <div class="data-scan" id="o_details">
                 </div>
             </aside>
+            
             <main>
-                <h2 style="margin-top:0;">> HISTORIQUE CLASSIFIÉ</h2>
-                <div id="orga_desc" style="white-space: pre-wrap; line-height: 1.6;"></div>
+                <h2 style="margin-top:0; color: var(--accent-color);">> HISTORIQUE CLASSIFIÉ</h2>
+                <!-- Zone de description dynamique[cite: 6] -->
+                <div id="o_desc" style="white-space: pre-wrap; line-height: 1.6;"></div>
             </main>
         </div>
     </div>
@@ -48,48 +44,138 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        const urlParams = new URLSearchParams(window.location.search);
-        const orgaId = urlParams.get('id');
+        
+        // Stockage global et paramètres de statut[cite: 6]
+        let o = {}; 
+        let id = null;
+        let modeEdition = false;
 
-        async function chargerDossier() {
-            if (!orgaId) {
-                document.getElementById('orga_nom').innerText = "ERREUR : ID MANQUANT";
+        async function chargerFiche() {
+            id = new URLSearchParams(window.location.search).get('id');
+            
+            if (!id) {
+                document.getElementById('o_nom').innerText = "ERREUR : ID MANQUANT";
+                document.getElementById('content_layout').style.display = "flex";
                 return;
             }
 
-            const { data, error } = await supabaseClient
-                .from('organisations')
-                .select('*')
-                .eq('id', orgaId)
-                .single();
+            // Récupération unique[cite: 6]
+            const { data, error } = await supabaseClient.from('organisations').select('*').eq('id', id).single();
 
             if (error || !data) {
-                document.getElementById('orga_nom').innerText = "DOSSIER INTROUVABLE";
+                document.getElementById('o_nom').innerText = "DOSSIER INTROUVABLE";
+                document.getElementById('content_layout').style.display = "flex";
                 return;
             }
 
-            document.getElementById('orga_nom').innerText = data.nom ? `DOSSIER: ${data.nom.toUpperCase()}` : 'INCONNU';
-            
-            const imageSrc = data.image_url && data.image_url.startsWith('http') 
-                ? data.image_url
-                : `images/${data.image_url || 'default_logo.png'}`;
-            document.getElementById('orga_img').src = imageSrc;
-
-            document.getElementById('orga_type').innerText = data.type || "Inconnu";
-            document.getElementById('orga_statut').innerText = data.statut || "Non défini";
-            document.getElementById('orga_fondation').innerText = data.fondation || "Classifié";
-            document.getElementById('orga_fondateurs').innerText = data.fondateurs || "Inconnu";
-            document.getElementById('orga_qg').innerText = data.qg || "Non localisé";
-            document.getElementById('orga_desc').innerText = data.description || "Aucune donnée disponible dans le système.";
-
-            if (data.statut && data.statut.toLowerCase().includes('démantelé')) {
-                document.getElementById('orga_statut').style.color = "var(--danger-color)";
-            }
-
+            // Transfert des données et lancement du mode lecture[cite: 6]
+            o = data;
             document.getElementById('content_layout').style.display = "flex";
+            afficherModeLecture();
         }
 
-        chargerDossier();
+        function afficherModeLecture() {
+            // Paramétrage du statut et du bouton[cite: 6]
+            modeEdition = false;
+            document.getElementById('btn_mode').innerText = "[ÉDITER LA FICHE]";
+
+            // Remplissage du tronc commun[cite: 6]
+            document.getElementById('o_nom').innerText = o.nom ? `DOSSIER: ${o.nom.toUpperCase()}` : 'INCONNU';
+            
+            const imageSrc = o.image_url && o.image_url.startsWith('http') 
+                ? o.image_url
+                : `images/${o.image_url || 'default_logo.png'}`;
+            document.getElementById('o_img').src = imageSrc;
+
+            const isDismantled = o.statut && o.statut.toLowerCase().includes('démantelé');
+            const statutColor = isDismantled ? 'color: var(--danger-color);' : '';
+
+            // Injection HTML des détails textuels[cite: 6]
+            document.getElementById('o_details').innerHTML = `
+                <label>TYPE</label>
+                <p>${o.type || "Inconnu"}</p>
+                <label>STATUT</label>
+                <p style="${statutColor}">${o.statut || "Non défini"}</p>
+                <label>ANNÉE DE FONDATION</label>
+                <p>${o.fondation || "Classifié"}</p>
+                <label>FONDATEUR(S)</label>
+                <p>${o.fondateurs || "Inconnu"}</p>
+                <label>QUARTIER GÉNÉRAL</label>
+                <p>${o.qg || "Non localisé"}</p>
+            `;
+
+            document.getElementById('o_desc').innerText = o.description || "Aucune donnée disponible dans le système.";
+        }
+
+        function afficherModeEdition() {
+            // Bascule de la variable et texte du bouton[cite: 6]
+            modeEdition = true;
+            document.getElementById('btn_mode').innerText = "[SAUVEGARDER LE DOSSIER]";
+
+            // Titre éditable avec formatage CSS en ligne intégré[cite: 6]
+            document.getElementById('o_nom').innerHTML = `<input type="text" id="edit_nom" value="${o.nom || ''}" style="width: 100%; box-sizing: border-box; text-align: center; margin: 0; font-family: inherit; font-size: inherit; color: var(--accent-color); background: transparent; border: 1px dashed var(--accent-color); padding: 5px;">`;
+            
+            // Remplacement des textes par des inputs[cite: 6]
+            document.getElementById('o_details').innerHTML = `
+                <label>URL DU LOGO</label>
+                <input type="text" id="edit_image_url" value="${o.image_url || ''}">
+                <label>TYPE</label>
+                <input type="text" id="edit_type" value="${o.type || ''}">
+                <label>STATUT ACTUEL</label>
+                <input type="text" id="edit_statut" value="${o.statut || ''}">
+                <label>FONDATION</label>
+                <input type="text" id="edit_fondation" value="${o.fondation || ''}">
+                <label>FONDATEUR(S)</label>
+                <input type="text" id="edit_fondateurs" value="${o.fondateurs || ''}">
+                <label>QUARTIER GÉNÉRAL</label>
+                <input type="text" id="edit_qg" value="${o.qg || ''}">
+            `;
+
+            // Description éditable adaptée au conteneur principal[cite: 6]
+            document.getElementById('o_desc').innerHTML = `<textarea id="edit_description" rows="12" style="width: 100%; box-sizing: border-box; background: transparent; color: var(--text-color); border: 1px dashed var(--accent-color); padding: 10px; font-family: inherit;">${o.description || ''}</textarea>`;
+        }
+
+        // Fonction d'aiguillage entre sauvegarde et édition[cite: 6]
+        function basculerMode() {
+            if (!modeEdition) {
+                afficherModeEdition();
+            } else {
+                sauvegarderFiche();
+            }
+        }
+
+        async function sauvegarderFiche() {
+            // Verrouillage du bouton pendant l'envoi[cite: 6]
+            const btn = document.getElementById('btn_mode');
+            btn.innerText = "[SYNCHRONISATION EN COURS...]";
+
+            // Collecte des modifications dans les champs[cite: 6]
+            const modifications = {
+                nom: document.getElementById('edit_nom').value,
+                image_url: document.getElementById('edit_image_url').value,
+                type: document.getElementById('edit_type').value,
+                statut: document.getElementById('edit_statut').value,
+                fondation: document.getElementById('edit_fondation').value,
+                fondateurs: document.getElementById('edit_fondateurs').value,
+                qg: document.getElementById('edit_qg').value,
+                description: document.getElementById('edit_description').value
+            };
+
+            // Envoi de la requête de mise à jour vers Supabase[cite: 6]
+            const { error } = await supabaseClient.from('organisations').update(modifications).eq('id', id);
+
+            if (error) {
+                alert("ÉCHEC DE LA SYNCHRONISATION : Erreur serveur.");
+                console.error(error);
+                btn.innerText = "[RETENUE DE SÉCURITÉ : RÉESSAYER]"; // Alerte visuelle en cas d'erreur[cite: 6]
+            } else {
+                // Écrase les anciennes données locales et rebascule en lecture seule[cite: 6]
+                o = { ...o, ...modifications };
+                afficherModeLecture();
+            }
+        }
+
+        chargerFiche(); // Initialisation au chargement de la page[cite: 6]
     </script>
 </body>
 </html>

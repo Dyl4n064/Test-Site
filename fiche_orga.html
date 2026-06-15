@@ -11,7 +11,7 @@
         
         <div class="terminal-header" style="margin-bottom: 20px;">
             <button class="btn-retour" onclick="window.location.href='organisations.html'" style="width: auto; padding: 7px 15px;">[RETOUR]</button>
-            <button class="btn-retour btn-enregistrer" id="btn_edit" style="width: auto; padding: 7px 15px; display: none;">[MODIFIER]</button>
+            <button class="btn-retour btn-enregistrer" id="btn_edit" style="width: auto; padding: 7px 15px;" onclick="window.location.href='edit_orga.html?id=' + new URLSearchParams(window.location.search).get('id')">[MODIFIER]</button>
         </div>
 
         <h1 id="orga_nom">CHARGEMENT...</h1>

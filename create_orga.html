@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Enregistrement // Organisation</title>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="terminal-header" style="margin-bottom: 20px;">
+            <button class="btn-retour" onclick="window.location.href='organisations.html'" style="width: auto; padding: 7px 15px;">[ANNULER]</button>
+        </div>
+
+        <h1>ENREGISTREMENT ORGANISATION</h1>
+        
+        <div class="field"><label>Nom de l'organisation</label><input type="text" id="f_nom"></div>
+        <div class="field"><label>URL Logo</label><input type="text" id="f_image_url"></div>
+        <div class="field"><label>Type (Corporation, Militaire, Culte...)</label><input type="text" id="f_type"></div>
+        <div class="field"><label>Statut Actuel</label><input type="text" id="f_statut"></div>
+        
+        <div class="field"><label>Année de fondation</label><input type="text" id="f_fondation"></div>
+        <div class="field"><label>Fondateur(s) principal(aux)</label><input type="text" id="f_fondateurs"></div>
+        <div class="field"><label>Quartier Général</label><input type="text" id="f_qg"></div>
+        
+        <div class="field"><label>Description / Historique</label><textarea id="f_description" rows="8"></textarea></div>
+        
+        <button onclick="publierOrga()" style="margin-top: 20px;">VALIDER L'ORGANISATION</button>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function publierOrga() {
+            const btn = document.querySelector('button[onclick="publierOrga()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "[ TRANSMISSION EN COURS... ]";
+
+            const dataForm = {
+                nom: document.getElementById('f_nom').value,
+                image_url: document.getElementById('f_image_url').value,
+                type: document.getElementById('f_type').value,
+                statut: document.getElementById('f_statut').value,
+                fondation: document.getElementById('f_fondation').value,
+                fondateurs: document.getElementById('f_fondateurs').value,
+                qg: document.getElementById('f_qg').value,
+                description: document.getElementById('f_description').value 
+            };
+
+            const { data, error } = await supabaseClient
+                .from('organisations')
+                .insert([dataForm])
+                .select(); 
+            
+            if (error) { 
+                alert("ERREUR: " + error.message); 
+                console.error(error);
+                btn.innerText = originalText;
+            } else { 
+                alert("SUCCÈS: Données synchronisées avec ARK."); 
+                window.location.href = 'fiche_orga.html?id=' + data[0].id; 
+            }
+        }
+    </script>
+</body>
+</html>

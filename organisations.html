@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Registre des Organisations</title>
+</head>
+<body>
+    <div class="container container-roster">
+        
+        <div class="terminal-header" style="display: flex; justify-content: space-between; align-items: center;">
+            <button class="btn-retour" onclick="window.location.href='registre.html'" style="width: auto; padding: 7px 15px;">[RETOUR]</button>
+            <button class="btn-retour btn-enregistrer" onclick="window.location.href='create_orga.html'" style="width: auto; padding: 7px 15px;">[NOUVELLE FACTION]</button>
+        </div>
+
+        <h1>FACTIONS & ORGANISATIONS</h1>
+        
+        <div class="roster-grid" id="grille-orgas">Chargement des données...</div>
+    </div>
+    
+    <div class="mentions-legales">
+        <p><strong>Mentions Légales :</strong> Ce registre est édité à titre personnel par Dyl4n06. Contact : dylancapron064@gmail.com.</p>
+        <p>Hébergement : GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA).</p>
+    </div>
+    
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        async function chargerOrgas() {
+            const { data: orgas, error } = await supabaseClient
+                .from('organisations')
+                .select('*')
+                .order('nom', { ascending: true });
+            
+            if (error) {
+                console.error("Erreur :", error);
+                document.getElementById('grille-orgas').innerHTML = "<p>Erreur de connexion à la base de données.</p>";
+                return;
+            }
+
+            if (orgas.length === 0) {
+                document.getElementById('grille-orgas').innerHTML = "<p>Aucune organisation enregistrée.</p>";
+                return;
+            }
+
+            document.getElementById('grille-orgas').innerHTML = orgas.map(orga => {
+                const isDismantled = (orga.statut || "").toLowerCase().includes('démantelé');
+                
+                const imageSrc = orga.image_url && orga.image_url.startsWith('http') 
+                    ? orga.image_url
+                    : `images/${orga.image_url || 'default_logo.png'}`;
+
+                return `
+                    <a href="fiche_orga.html?id=${orga.id}" class="card ${isDismantled ? 'status-decédé' : ''}" style="display: block; text-decoration: none; color: inherit;">
+                        <img src="${imageSrc}" style="width:100%; height:200px; object-fit:contain; background:#000; border-bottom: 2px solid #555; padding: 10px;">
+                        <h3 style="margin: 10px 0 5px 0;">${orga.nom}</h3>
+                        <p style="font-size: 0.9em; color: #aaa; margin: 5px 0;">TYPE: ${orga.type || "Inconnu"}</p>
+                        <p style="font-size: 0.9em; color: ${isDismantled ? 'var(--danger-color)' : '#aaa'}; margin: 5px 0;">STATUT: ${orga.statut || "Non défini"}</p>
+                    </a>
+                `;
+            }).join('');
+        }
+        
+        chargerOrgas();
+    </script>
+</body>
+</html>

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Dossier Organisation</title>
+</head>
+<body>
+    <div class="container container-roster">
+        
+        <div class="terminal-header" style="margin-bottom: 20px;">
+            <button class="btn-retour" onclick="window.location.href='organisations.html'" style="width: auto; padding: 7px 15px;">[RETOUR]</button>
+            <button class="btn-retour btn-enregistrer" id="btn_edit" style="width: auto; padding: 7px 15px; display: none;">[MODIFIER]</button>
+        </div>
+
+        <h1 id="orga_nom">CHARGEMENT...</h1>
+
+        <div class="profile-layout" style="display: none;" id="content_layout">
+            <aside class="infobox">
+                <img id="orga_img" src="" alt="Logo" style="width:100%; max-height:250px; object-fit:contain; background:#000; border-bottom:1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
+                <div class="data-scan">
+                    <label>TYPE</label>
+                    <p id="orga_type">-</p>
+                    <label>STATUT</label>
+                    <p id="orga_statut">-</p>
+                    <label>ANNÉE DE FONDATION</label>
+                    <p id="orga_fondation">-</p>
+                    <label>FONDATEUR(S)</label>
+                    <p id="orga_fondateurs">-</p>
+                    <label>QUARTIER GÉNÉRAL</label>
+                    <p id="orga_qg">-</p>
+                </div>
+            </aside>
+            <main>
+                <h2 style="margin-top:0;">> HISTORIQUE CLASSIFIÉ</h2>
+                <div id="orga_desc" style="white-space: pre-wrap; line-height: 1.6;"></div>
+            </main>
+        </div>
+    </div>
+
+    <div class="mentions-legales">
+        <p><strong>Mentions Légales :</strong> Ce registre est édité à titre personnel par Dyl4n06. Contact : dylancapron064@gmail.com.</p>
+        <p>Hébergement : GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA).</p>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const urlParams = new URLSearchParams(window.location.search);
+        const orgaId = urlParams.get('id');
+
+        async function chargerDossier() {
+            if (!orgaId) {
+                document.getElementById('orga_nom').innerText = "ERREUR : ID MANQUANT";
+                return;
+            }
+
+            const { data, error } = await supabaseClient
+                .from('organisations')
+                .select('*')
+                .eq('id', orgaId)
+                .single();
+
+            if (error || !data) {
+                document.getElementById('orga_nom').innerText = "DOSSIER INTROUVABLE";
+                return;
+            }
+
+            document.getElementById('orga_nom').innerText = data.nom ? `DOSSIER: ${data.nom.toUpperCase()}` : 'INCONNU';
+            
+            const imageSrc = data.image_url && data.image_url.startsWith('http') 
+                ? data.image_url
+                : `images/${data.image_url || 'default_logo.png'}`;
+            document.getElementById('orga_img').src = imageSrc;
+
+            document.getElementById('orga_type').innerText = data.type || "Inconnu";
+            document.getElementById('orga_statut').innerText = data.statut || "Non défini";
+            document.getElementById('orga_fondation').innerText = data.fondation || "Classifié";
+            document.getElementById('orga_fondateurs').innerText = data.fondateurs || "Inconnu";
+            document.getElementById('orga_qg').innerText = data.qg || "Non localisé";
+            document.getElementById('orga_desc').innerText = data.description || "Aucune donnée disponible dans le système.";
+
+            if (data.statut && data.statut.toLowerCase().includes('démantelé')) {
+                document.getElementById('orga_statut').style.color = "var(--danger-color)";
+            }
+
+            document.getElementById('content_layout').style.display = "flex";
+        }
+
+        chargerDossier();
+    </script>
+</body>
+</html>

@@ -1,6 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
 
-/* Sécurité globale pour éviter que les marges internes cassent la largeur sur mobile */
+/* Sécurité globale pour éviter que les marges internes cassent la largeur sur mobile[cite: 2] */
 *, *::before, *::after {
     box-sizing: border-box;
 }
@@ -292,4 +292,34 @@ button:active {
     0% { opacity: 0.97; }
     50% { opacity: 1; }
     100% { opacity: 0.98; }
+}
+
+/* 6. Onde de scan horizontal (Balayage Radar) */
+body::after {
+    content: " ";
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 250px; /* Largeur du faisceau lumineux */
+    height: 100%;
+    background: linear-gradient(90deg, 
+        rgba(0, 255, 65, 0) 0%, 
+        rgba(0, 255, 65, 0.07) 50%, 
+        rgba(0, 255, 65, 0) 100%);
+    pointer-events: none; 
+    z-index: 1000; /* Passe au-dessus de tout le terminal */
+    animation: radar-sweep 6s cubic-bezier(0.25, 0.46, 0.45, 0.94) infinite;
+}
+
+@keyframes radar-sweep {
+    0% {
+        transform: translateX(-250px);
+    }
+    40% {
+        transform: translateX(100vw);
+    }
+    /* De 40% à 100% : l'onde attend avant de relancer le prochain scan */
+    100% {
+        transform: translateX(100vw); 
+    }
 }

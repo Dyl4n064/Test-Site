@@ -12,8 +12,8 @@
         }
 
         body {
-            background-color: #05080c; 
-            color: #d1d5db;
+            background-color: #0d1117; 
+            color: #c9d1d9;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
             justify-content: center;
@@ -23,14 +23,14 @@
             position: relative;
         }
 
-        /* Effet balayage écran CRT rétro-futuriste */
+        /* Effet balayage écran CRT rétro-futuriste vert */
         body::before {
             content: " ";
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
             background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 180, 255, 0.02), rgba(0, 180, 255, 0.04));
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 65, 0.02), rgba(0, 255, 65, 0.04));
             z-index: 10;
             background-size: 100% 4px, 6px 100%;
             pointer-events: none;
@@ -46,10 +46,10 @@
         .terminal-box {
             width: 90%;
             max-width: 550px;
-            background: rgba(0, 0, 0, 0.75);
-            border: 1px solid #1b273a;
-            border-top: 4px solid #00b4ff;
-            box-shadow: 0 0 20px rgba(0, 180, 255, 0.1);
+            background: rgba(0, 0, 0, 0.85);
+            border: 1px solid #30363d;
+            border-top: 4px solid #00ff41; 
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
             padding: 30px;
             text-align: center;
             border-radius: 4px;
@@ -58,11 +58,11 @@
 
         h1 {
             font-size: 1.6rem;
-            color: #00b4ff;
+            color: #00ff41;
             letter-spacing: 2px;
             margin-bottom: 10px;
             text-transform: uppercase;
-            text-shadow: 0 0 4px rgba(0, 180, 255, 0.6), 0 0 10px rgba(0, 180, 255, 0.2);
+            text-shadow: 0 0 4px rgba(0, 255, 65, 0.6), 0 0 10px rgba(0, 255, 65, 0.2);
         }
 
         .subtitle {
@@ -72,7 +72,6 @@
             text-transform: uppercase;
         }
 
-        /* Design des champs de saisie */
         .input-group {
             margin-bottom: 20px;
             text-align: left;
@@ -80,7 +79,7 @@
         
         .input-group label {
             display: block;
-            color: #00b4ff;
+            color: #00ff41;
             font-size: 0.8rem;
             margin-bottom: 5px;
             text-transform: uppercase;
@@ -89,7 +88,7 @@
         input {
             width: 100%;
             background: #000;
-            border: 1px solid #1b273a;
+            border: 1px solid #30363d;
             color: #fff;
             padding: 12px;
             font-family: 'Courier New', Courier, monospace;
@@ -98,12 +97,11 @@
         }
 
         input:focus {
-            border-color: #00b4ff;
-            box-shadow: 0 0 12px rgba(0, 180, 255, 0.3);
-            background: #020407;
+            border-color: #00ff41;
+            box-shadow: 0 0 12px rgba(0, 255, 65, 0.3);
+            background: #0d1117;
         }
 
-        /* Organisation des boutons */
         .btn-container {
             display: flex;
             gap: 15px;
@@ -113,8 +111,8 @@
         .terminal-btn {
             flex: 1;
             background: transparent;
-            color: #00b4ff;
-            border: 1px solid #00b4ff;
+            color: #00ff41;
+            border: 1px solid #00ff41;
             padding: 12px;
             font-size: 0.9rem;
             font-family: 'Courier New', Courier, monospace;
@@ -125,9 +123,9 @@
         }
 
         .terminal-btn:hover {
-            background: #00b4ff;
+            background: #00ff41;
             color: #000;
-            box-shadow: 0 0 15px rgba(0, 180, 255, 0.6);
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
         }
 
         .btn-secondary {
@@ -141,16 +139,15 @@
             box-shadow: none;
         }
 
-        /* Message d'erreur */
         #auth-error {
             color: #ff1111;
             font-size: 0.85rem;
             margin-top: 15px;
             min-height: 20px;
             text-shadow: 0 0 5px rgba(255, 17, 17, 0.5);
+            word-wrap: break-word;
         }
 
-        /* Zone de chargement cachée au début */
         .loading-zone {
             display: none;
             margin-top: 20px;
@@ -158,7 +155,7 @@
 
         .status-text {
             font-size: 0.9rem;
-            color: #00b4ff;
+            color: #00ff41;
             margin-bottom: 12px;
             text-align: left;
             height: 20px;
@@ -167,7 +164,7 @@
         .progress-bar-container {
             width: 100%;
             height: 24px;
-            border: 1px solid #00b4ff;
+            border: 1px solid #00ff41;
             padding: 2px;
             background: rgba(0, 0, 0, 0.5);
         }
@@ -175,15 +172,15 @@
         .progress-bar {
             width: 0%;
             height: 100%;
-            background-color: #00b4ff;
-            box-shadow: 0 0 10px rgba(0, 180, 255, 0.8);
+            background-color: #00ff41;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
             transition: width 0.1s linear;
         }
 
         .percentage {
             margin-top: 10px;
             font-size: 1rem;
-            color: #00b4ff;
+            color: #00ff41;
             text-align: right;
         }
 
@@ -227,23 +224,19 @@
         </div>
     </div>
 
-    <!-- Scripts Supabase -->
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
-        // Initialisation de Supabase à partir du fichier config.js
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // --- FONCTION UTILITAIRE ---
-        // Transforme "Nom du Personnage" en faux email pour satisfaire Supabase
         function genererEmailDepuisNom(nom) {
             let nomPropre = nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             nomPropre = nomPropre.toLowerCase().trim().replace(/[^a-z0-9]/g, '.');
-            return nomPropre + "@dso";
+            return nomPropre + "@umbrella.corp";
         }
 
-        // --- 1. FONCTION DE CONNEXION ---
+        // --- 1. CONNEXION ---
         async function tenterConnexion() {
             const username = document.getElementById('auth_username').value;
             const password = document.getElementById('auth_password').value;
@@ -256,7 +249,7 @@
 
             const fauxEmail = genererEmailDepuisNom(username);
             errorDiv.innerText = "[ INTERROGATION DES SERVEURS... ]";
-            errorDiv.style.color = "#00b4ff";
+            errorDiv.style.color = "#00ff41";
 
             const { data, error } = await supabaseClient.auth.signInWithPassword({
                 email: fauxEmail,
@@ -265,7 +258,7 @@
 
             if (error) {
                 errorDiv.style.color = "#ff1111";
-                errorDiv.innerText = "ACCÈS REFUSÉ : Identité non reconnue.";
+                errorDiv.innerText = "ACCÈS REFUSÉ : " + error.message;
                 console.error(error);
             } else {
                 document.getElementById('login-form').style.display = 'none';
@@ -273,7 +266,7 @@
             }
         }
 
-        // --- 2. FONCTION D'INSCRIPTION ---
+        // --- 2. INSCRIPTION ---
         async function creerCompte() {
             const username = document.getElementById('auth_username').value;
             const password = document.getElementById('auth_password').value;
@@ -289,10 +282,10 @@
             }
 
             const fauxEmail = genererEmailDepuisNom(username);
-            errorDiv.innerText = "[ ENREGISTREMENT DANS LA BASE... ]";
-            errorDiv.style.color = "#00b4ff";
+            errorDiv.innerText = "[ ENREGISTREMENT EN COURS... ]";
+            errorDiv.style.color = "#00ff41";
 
-            // Étape 1 : Création du compte (Supabase gère le mot de passe ici de façon invisible et sécurisée)
+            // Étape 1 : Création de l'utilisateur dans l'authentification Supabase
             const { data: authData, error: authError } = await supabaseClient.auth.signUp({
                 email: fauxEmail,
                 password: password,
@@ -300,21 +293,21 @@
 
             if (authError) {
                 errorDiv.style.color = "#ff1111";
-                errorDiv.innerText = "ERREUR : L'enregistrement a échoué.";
+                errorDiv.innerText = "ÉCHEC AUTHENTIFICATION : " + authError.message;
                 console.error(authError);
                 return;
             }
 
-            // Étape 2 : Insertion uniquement du nom public dans ta table 'agent'
+            // Étape 2 : Insertion du nom de l'agent (Corrigé avec un 's' !)
             const { error: dbError } = await supabaseClient
-                .from('agent') 
+                .from('agents') 
                 .insert([
                     { nom_agent: username }
                 ]);
 
             if (dbError) {
                 errorDiv.style.color = "#ff1111";
-                errorDiv.innerText = "ERREUR : Compte créé, mais impossible d'enregistrer le nom de l'agent.";
+                errorDiv.innerText = "ÉCHEC BASE DE DONNÉES : " + dbError.message;
                 console.error(dbError);
             } else {
                 errorDiv.style.color = "#00ff41";
@@ -322,11 +315,11 @@
             }
         }
 
-        // --- 3. L'ANIMATION DE CHARGEMENT ---
+        // --- 3. ANIMATION DE CHARGEMENT ---
         const messages = [
             "Liaison cryptée établie...",
             "Contournement des pare-feu...",
-            "Déchiffrement des données sensibles...",
+            "Déchiffrement des dossiers confidentiels...",
             "Vérification des accréditations...",
             "Synchronisation avec le registre central..."
         ];

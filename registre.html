@@ -10,8 +10,12 @@
     <div class="container">
         
         <div class="terminal-header">
-            <h2>> BIENVENUE, AGENT_</h2>
-            <p id="horloge">CALCUL DU TEMPS...</p>
+            <div>
+                <h2 id="welcome-message">> BIENVENUE, AGENT_</h2>
+                <p id="horloge">CALCUL DU TEMPS...</p>
+            </div>
+            <!-- Bouton de déconnexion utilisant ta classe d'animation -->
+            <button class="btn-retour" onclick="deconnexion()" style="width: auto; padding: 7px 15px;">[ DÉCONNEXION ]</button>
         </div>
 
         <div style="text-align: center; margin-bottom: 30px;">
@@ -27,6 +31,7 @@
         </div>
     </div>
 
+    <!-- Espace de travail superposé -->
     <div id="workspace-overlay" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(5, 5, 5, 0.8); z-index: 2000; justify-content: center; align-items: center; backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); padding: 10px;">
         
         <div id="workspace-content" class="workspace-modal">
@@ -44,18 +49,38 @@
             </div>
         </div>
     </div>
+
+    <!-- Scripts Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="config.js"></script>
+
     <script>
-        // Fonctions pour piloter la fenêtre de la console
-        function abrirWorkspace() { // Alias optionnel ou correction directe : ouvrirWorkspace
-            ouvrirWorkspace();
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- GESTION DE L'IDENTITÉ (Option 1 : Prénom uniquement) ---
+        const nomComplet = localStorage.getItem('agentName') || 'INCONNU';
+        // On coupe au niveau de l'espace et on garde le premier élément (0)
+        const prenomAgent = nomComplet.split(' ')[0];
+        
+        document.getElementById('welcome-message').innerText = `> BIENVENUE, ${prenomAgent.toUpperCase()}_`;
+
+        // --- SYSTÈME DE DÉCONNEXION ---
+        async function deconnexion() {
+            // Déconnexion sécurisée de Supabase
+            await supabaseClient.auth.signOut();
+            // Suppression de l'identité en mémoire
+            localStorage.removeItem('agentName');
+            // Renvoi vers le portail
+            window.location.href = 'index.html';
         }
 
+        // --- ANIMATIONS ET HORLOGE ---
         function ouvrirWorkspace() {
             const overlay = document.getElementById('workspace-overlay');
             const content = document.getElementById('workspace-content');
             
             overlay.style.display = 'flex';
-            content.classList.add('modal-zoom'); /* Déclenche l'animation de zoom ressort */
+            content.classList.add('modal-zoom'); 
         }
 
         function fermerWorkspace() {
@@ -66,14 +91,12 @@
             overlay.style.display = 'none';
         }
 
-        // Quitter instantanément le sous-menu en appuyant sur la touche Échap
         window.addEventListener('keydown', function(evenement) {
             if (evenement.key === 'Escape' || evenement.key === 'Esc') {
                 fermerWorkspace();
             }
         });
 
-        // Gestion de l'horloge interne du terminal
         function majHorloge() {
             const horlogeElement = document.getElementById('horloge');
             const maintenant = new Date();

@@ -240,7 +240,7 @@
         function genererEmailDepuisNom(nom) {
             let nomPropre = nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
             nomPropre = nomPropre.toLowerCase().trim().replace(/[^a-z0-9]/g, '.');
-            return nomPropre + "@umbrella.corp";
+            return nomPropre + "@dso";
         }
 
         // --- 1. FONCTION DE CONNEXION ---
@@ -357,7 +357,7 @@
                     statusText.innerText = "ACCÈS AUTORISÉ.";
                     
                     setTimeout(() => {
-                        window.location.href = 'console.html'; 
+                        window.location.href = 'registre.html'; 
                     }, 800);
                 }
             }, 30);

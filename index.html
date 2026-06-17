@@ -8,27 +8,55 @@
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { background-color: #0d0e12; color: #d1d5db; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; position: relative; }
         
-        /* Effet balayage écran CRT */
+        /* Effet balayage CRT */
         body::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 10; background-size: 100% 4px, 6px 100%; pointer-events: none; }
 
         .terminal-box { width: 90%; max-width: 550px; background: rgba(17, 24, 39, 0.85); border: 2px solid #00ff66; box-shadow: 0 0 20px rgba(0, 255, 102, 0.2); padding: 30px; text-align: center; border-radius: 4px; z-index: 5; }
-        h1 { font-size: 1.6rem; color: #00ff66; margin-bottom: 15px; text-transform: uppercase; }
+        h1 { font-size: 1.6rem; color: #00ff66; margin-bottom: 20px; text-transform: uppercase; }
         .input-group { margin-bottom: 20px; text-align: left; }
-        input { width: 100%; background: #000; border: 1px solid #00ff66; color: #fff; padding: 12px; font-family: monospace; }
-        .terminal-btn { background: transparent; color: #00ff66; border: 2px solid #00ff66; padding: 12px 30px; cursor: pointer; text-transform: uppercase; font-weight: bold; width: 100%; }
-        .terminal-btn:hover { background: #00ff66; color: #000; }
-        #auth-error { color: #ff3333; margin-top: 15px; font-size: 0.9rem; }
+        input { width: 100%; background: #000; border: 1px solid #00ff66; color: #fff; padding: 12px; font-family: monospace; outline: none; }
+        input:focus { box-shadow: 0 0 10px rgba(0, 255, 102, 0.3); }
+        
+        .btn-container { display: flex; gap: 15px; margin-top: 15px; }
+        .terminal-btn { flex: 1; background: transparent; color: #00ff66; border: 2px solid #00ff66; padding: 12px 10px; cursor: pointer; text-transform: uppercase; font-weight: bold; font-family: monospace; transition: all 0.2s; }
+        .terminal-btn:hover { background: #00ff66; color: #000; box-shadow: 0 0 15px rgba(0, 255, 102, 0.4); }
+        
+        /* Barre de chargement */
+        .loading-zone { display: none; margin-top: 20px; }
+        .status-text { font-size: 0.9rem; color: #00ff66; margin-bottom: 10px; text-align: left; }
+        .progress-bar-container { width: 100%; height: 24px; border: 1px solid #00ff66; padding: 2px; background: rgba(0,0,0,0.5); }
+        .progress-bar { width: 0%; height: 100%; background-color: #00ff66; box-shadow: 0 0 10px rgba(0, 255, 102, 0.8); transition: width 0.1s linear; }
+        #auth-error { color: #ff3333; margin-top: 15px; font-size: 0.85rem; min-height: 20px; word-wrap: break-word; }
+
+        @media screen and (max-width: 600px) {
+            .btn-container { flex-direction: column; gap: 10px; }
+        }
     </style>
 </head>
 <body>
 
     <div class="terminal-box">
-        <h1>Initialisation Agent</h1>
-        <div class="input-group">
-            <input type="text" id="auth_username" placeholder="IDENTITÉ DE L'AGENT...">
+        <h1>MAINFRAME // ACCÈS</h1>
+        
+        <div id="form-zone">
+            <div class="input-group">
+                <input type="text" id="auth_username" placeholder="IDENTITÉ DE L'AGENT..." autocomplete="off">
+            </div>
+            
+            <div class="btn-container">
+                <button class="terminal-btn" onclick="demarrerSession('register')">[ ENREGISTREMENT ]</button>
+                <button class="terminal-btn" onclick="demarrerSession('login')">[ CONNEXION ]</button>
+            </div>
+            
+            <div id="auth-error"></div>
         </div>
-        <button class="terminal-btn" onclick="creerCompte()">[ ACCÉDER AU SYSTÈME ]</button>
-        <div id="auth-error"></div>
+        
+        <div id="loading-zone" class="loading-zone">
+            <div id="status-text" class="status-text">Vérification des accréditations...</div>
+            <div class="progress-bar-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+        </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -37,27 +65,88 @@
     <script>
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        async function creerCompte() {
-            const username = document.getElementById('auth_username').value;
+        async function demarrerSession(mode) {
+            const username = document.getElementById('auth_username').value.trim();
             const errorDiv = document.getElementById('auth-error');
 
-            if (!username) { errorDiv.innerText = "ERREUR : Identité requise."; return; }
-            errorDiv.innerText = "[ CONNEXION ANONYME... ]";
-
-            // 1. Connexion anonyme
-            const { error: authError } = await supabaseClient.auth.signInAnonymously();
-            if (authError) { errorDiv.innerText = "ERREUR : " + authError.message; return; }
-
-            // 2. Enregistrement du nom dans la table agents
-            const { error: dbError } = await supabaseClient
-                .from('agents') 
-                .insert([{ nom_agent: username }]);
-
-            if (dbError) {
-                errorDiv.innerText = "ERREUR BASE : " + dbError.message;
-            } else {
-                window.location.href = 'registre.html';
+            if (!username) { 
+                errorDiv.innerText = "ERREUR : Identité requise."; 
+                return; 
             }
+
+            errorDiv.style.color = "#00ff66";
+            errorDiv.innerText = "[ INTERROGATION DES SERVEURS... ]";
+
+            // 1. Connexion anonyme obligatoire pour communiquer avec Supabase
+            const { error: authError } = await supabaseClient.auth.signInAnonymously();
+            if (authError) { 
+                errorDiv.style.color = "#ff3333";
+                errorDiv.innerText = "ERREUR SYSTÈME : " + authError.message; 
+                return; 
+            }
+
+            // 2. Logique selon le bouton cliqué (Enregistrement ou Connexion)
+            if (mode === 'register') {
+                // Vérification anti-doublon
+                const { data: existing } = await supabaseClient.from('agents').select('*').eq('nom_agent', username);
+                if (existing && existing.length > 0) {
+                    errorDiv.style.color = "#ff3333";
+                    errorDiv.innerText = "ERREUR : Ce nom d'agent est déjà enregistré.";
+                    return;
+                }
+
+                // Création du nouvel agent
+                const { error: dbError } = await supabaseClient.from('agents').insert([{ nom_agent: username }]);
+                if (dbError) { 
+                    errorDiv.style.color = "#ff3333";
+                    errorDiv.innerText = "ERREUR BASE : " + dbError.message; 
+                    return; 
+                }
+
+            } else if (mode === 'login') {
+                // Vérification de l'existence de l'agent
+                const { data, error } = await supabaseClient.from('agents').select('*').eq('nom_agent', username);
+                if (error || !data || data.length === 0) { 
+                    errorDiv.style.color = "#ff3333";
+                    errorDiv.innerText = "ACCÈS REFUSÉ : Identité non reconnue dans le registre."; 
+                    return; 
+                }
+            }
+
+            // 3. Lancement de la séquence d'immersion visuelle
+            errorDiv.innerText = "";
+            document.getElementById('form-zone').style.display = 'none';
+            document.getElementById('loading-zone').style.display = 'block';
+            
+            let progress = 0;
+            const bar = document.getElementById('progress-bar');
+            const statusText = document.getElementById('status-text');
+            
+            const messages = [
+                "Liaison cryptée établie...",
+                "Contournement des pare-feu...",
+                "Déchiffrement des dossiers...",
+                "Accès autorisé."
+            ];
+
+            const interval = setInterval(() => {
+                progress += 2;
+                bar.style.width = progress + '%';
+                
+                // Changement de texte dynamique pour le style
+                if (progress === 25) statusText.innerText = messages[0];
+                if (progress === 50) statusText.innerText = messages[1];
+                if (progress === 75) statusText.innerText = messages[2];
+                if (progress === 95) statusText.innerText = messages[3];
+
+                if (progress >= 100) {
+                    clearInterval(interval);
+                    // Redirection vers ton registre
+                    setTimeout(() => {
+                        window.location.href = 'registre.html';
+                    }, 500);
+                }
+            }, 40);
         }
     </script>
 </body>

@@ -5,355 +5,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Portail de Sécurité // ARK</title>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-
-        body {
-            background-color: #0d1117; 
-            color: #c9d1d9;
-            font-family: 'Courier New', Courier, monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-
-        /* Effet balayage écran CRT rétro-futuriste vert */
-        body::before {
-            content: " ";
-            display: block;
-            position: absolute;
-            top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
-                        linear-gradient(90deg, rgba(255, 0, 0, 0.02), rgba(0, 255, 65, 0.02), rgba(0, 255, 65, 0.04));
-            z-index: 10;
-            background-size: 100% 4px, 6px 100%;
-            pointer-events: none;
-            animation: crt-pulse 0.15s infinite;
-        }
-
-        @keyframes crt-pulse {
-            0% { opacity: 0.98; }
-            50% { opacity: 1; }
-            100% { opacity: 0.99; }
-        }
-
-        .terminal-box {
-            width: 90%;
-            max-width: 550px;
-            background: rgba(0, 0, 0, 0.85);
-            border: 1px solid #30363d;
-            border-top: 4px solid #00ff41; 
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
-            padding: 30px;
-            text-align: center;
-            border-radius: 4px;
-            z-index: 5;
-        }
-
-        h1 {
-            font-size: 1.6rem;
-            color: #00ff41;
-            letter-spacing: 2px;
-            margin-bottom: 10px;
-            text-transform: uppercase;
-            text-shadow: 0 0 4px rgba(0, 255, 65, 0.6), 0 0 10px rgba(0, 255, 65, 0.2);
-        }
-
-        .subtitle {
-            font-size: 0.9rem;
-            color: #4c5a6e;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-        }
-
-        .input-group {
-            margin-bottom: 20px;
-            text-align: left;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { background-color: #0d0e12; color: #d1d5db; font-family: 'Courier New', Courier, monospace; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; position: relative; }
         
-        .input-group label {
-            display: block;
-            color: #00ff41;
-            font-size: 0.8rem;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
+        /* Effet balayage écran CRT */
+        body::before { content: " "; display: block; position: absolute; top: 0; left: 0; bottom: 0; right: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06)); z-index: 10; background-size: 100% 4px, 6px 100%; pointer-events: none; }
 
-        input {
-            width: 100%;
-            background: #000;
-            border: 1px solid #30363d;
-            color: #fff;
-            padding: 12px;
-            font-family: 'Courier New', Courier, monospace;
-            outline: none;
-            transition: all 0.3s;
-        }
-
-        input:focus {
-            border-color: #00ff41;
-            box-shadow: 0 0 12px rgba(0, 255, 65, 0.3);
-            background: #0d1117;
-        }
-
-        .btn-container {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .terminal-btn {
-            flex: 1;
-            background: transparent;
-            color: #00ff41;
-            border: 1px solid #00ff41;
-            padding: 12px;
-            font-size: 0.9rem;
-            font-family: 'Courier New', Courier, monospace;
-            font-weight: bold;
-            cursor: pointer;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-
-        .terminal-btn:hover {
-            background: #00ff41;
-            color: #000;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.6);
-        }
-
-        .btn-secondary {
-            border-color: #4c5a6e;
-            color: #4c5a6e;
-        }
-
-        .btn-secondary:hover {
-            background: #4c5a6e;
-            color: #fff;
-            box-shadow: none;
-        }
-
-        #auth-error {
-            color: #ff1111;
-            font-size: 0.85rem;
-            margin-top: 15px;
-            min-height: 20px;
-            text-shadow: 0 0 5px rgba(255, 17, 17, 0.5);
-            word-wrap: break-word;
-        }
-
-        .loading-zone {
-            display: none;
-            margin-top: 20px;
-        }
-
-        .status-text {
-            font-size: 0.9rem;
-            color: #00ff41;
-            margin-bottom: 12px;
-            text-align: left;
-            height: 20px;
-        }
-
-        .progress-bar-container {
-            width: 100%;
-            height: 24px;
-            border: 1px solid #00ff41;
-            padding: 2px;
-            background: rgba(0, 0, 0, 0.5);
-        }
-
-        .progress-bar {
-            width: 0%;
-            height: 100%;
-            background-color: #00ff41;
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.8);
-            transition: width 0.1s linear;
-        }
-
-        .percentage {
-            margin-top: 10px;
-            font-size: 1rem;
-            color: #00ff41;
-            text-align: right;
-        }
-
-        @media screen and (max-width: 600px) {
-            .terminal-box { padding: 20px; }
-            .btn-container { flex-direction: column; gap: 10px; }
-        }
+        .terminal-box { width: 90%; max-width: 550px; background: rgba(17, 24, 39, 0.85); border: 2px solid #00ff66; box-shadow: 0 0 20px rgba(0, 255, 102, 0.2); padding: 30px; text-align: center; border-radius: 4px; z-index: 5; }
+        h1 { font-size: 1.6rem; color: #00ff66; margin-bottom: 15px; text-transform: uppercase; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        input { width: 100%; background: #000; border: 1px solid #00ff66; color: #fff; padding: 12px; font-family: monospace; }
+        .terminal-btn { background: transparent; color: #00ff66; border: 2px solid #00ff66; padding: 12px 30px; cursor: pointer; text-transform: uppercase; font-weight: bold; width: 100%; }
+        .terminal-btn:hover { background: #00ff66; color: #000; }
+        #auth-error { color: #ff3333; margin-top: 15px; font-size: 0.9rem; }
     </style>
 </head>
 <body>
 
     <div class="terminal-box">
-        <h1>MAINFRAME CENTRAL</h1>
-        <p class="subtitle">Authentification requise</p>
-        
-        <div id="login-form">
-            <div class="input-group">
-                <label>Nom du Personnage</label>
-                <input type="text" id="auth_username" placeholder="Ex: Leon Kennedy" autocomplete="off">
-            </div>
-            
-            <div class="input-group">
-                <label>Code d'Accès</label>
-                <input type="password" id="auth_password" placeholder="••••••••">
-            </div>
-
-            <div id="auth-error"></div>
-
-            <div class="btn-container">
-                <button class="terminal-btn" onclick="tenterConnexion()">[ CONNEXION ]</button>
-                <button class="terminal-btn btn-secondary" onclick="creerCompte()">[ ENREGISTRER ]</button>
-            </div>
+        <h1>Initialisation Agent</h1>
+        <div class="input-group">
+            <input type="text" id="auth_username" placeholder="IDENTITÉ DE L'AGENT...">
         </div>
-        
-        <div id="loading-zone" class="loading-zone">
-            <div id="status-text" class="status-text">Vérification de l'identité...</div>
-            <div class="progress-bar-container">
-                <div id="progress-bar" class="progress-bar"></div>
-            </div>
-            <div id="percentage" class="percentage">0%</div>
-        </div>
+        <button class="terminal-btn" onclick="creerCompte()">[ ACCÉDER AU SYSTÈME ]</button>
+        <div id="auth-error"></div>
     </div>
 
-    <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
+    <script src="config.js"></script>
+
     <script>
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        function genererEmailDepuisNom(nom) {
-            let nomPropre = nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            nomPropre = nomPropre.toLowerCase().trim().replace(/[^a-z0-9]/g, '.');
-            return nomPropre + "@umbrella.corp";
-        }
-
-        // --- 1. CONNEXION ---
-        async function tenterConnexion() {
-            const username = document.getElementById('auth_username').value;
-            const password = document.getElementById('auth_password').value;
-            const errorDiv = document.getElementById('auth-error');
-
-            if (!username || !password) {
-                errorDiv.innerText = "ERREUR : Saisissez votre identité.";
-                return;
-            }
-
-            const fauxEmail = genererEmailDepuisNom(username);
-            errorDiv.innerText = "[ INTERROGATION DES SERVEURS... ]";
-            errorDiv.style.color = "#00ff41";
-
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email: fauxEmail,
-                password: password,
-            });
-
-            if (error) {
-                errorDiv.style.color = "#ff1111";
-                errorDiv.innerText = "ACCÈS REFUSÉ : " + error.message;
-                console.error(error);
-            } else {
-                document.getElementById('login-form').style.display = 'none';
-                lancerImmersion();
-            }
-        }
-
-        // --- 2. INSCRIPTION ---
         async function creerCompte() {
             const username = document.getElementById('auth_username').value;
-            const password = document.getElementById('auth_password').value;
             const errorDiv = document.getElementById('auth-error');
 
-            if (!username || !password) {
-                errorDiv.innerText = "ERREUR : Saisissez une identité et un code.";
-                return;
-            }
-            if (password.length < 6) {
-                errorDiv.innerText = "ERREUR : Le code d'accès doit contenir 6 caractères minimum.";
-                return;
-            }
+            if (!username) { errorDiv.innerText = "ERREUR : Identité requise."; return; }
+            errorDiv.innerText = "[ CONNEXION ANONYME... ]";
 
-            const fauxEmail = genererEmailDepuisNom(username);
-            errorDiv.innerText = "[ ENREGISTREMENT EN COURS... ]";
-            errorDiv.style.color = "#00ff41";
+            // 1. Connexion anonyme
+            const { error: authError } = await supabaseClient.auth.signInAnonymously();
+            if (authError) { errorDiv.innerText = "ERREUR : " + authError.message; return; }
 
-            // Étape 1 : Création de l'utilisateur dans l'authentification Supabase
-            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
-                email: fauxEmail,
-                password: password,
-            });
-
-            if (authError) {
-                errorDiv.style.color = "#ff1111";
-                errorDiv.innerText = "ÉCHEC AUTHENTIFICATION : " + authError.message;
-                console.error(authError);
-                return;
-            }
-
-            // Étape 2 : Insertion du nom de l'agent (Corrigé avec un 's' !)
+            // 2. Enregistrement du nom dans la table agents
             const { error: dbError } = await supabaseClient
                 .from('agents') 
-                .insert([
-                    { nom_agent: username }
-                ]);
+                .insert([{ nom_agent: username }]);
 
             if (dbError) {
-                errorDiv.style.color = "#ff1111";
-                errorDiv.innerText = "ÉCHEC BASE DE DONNÉES : " + dbError.message;
-                console.error(dbError);
+                errorDiv.innerText = "ERREUR BASE : " + dbError.message;
             } else {
-                errorDiv.style.color = "#00ff41";
-                errorDiv.innerText = "IDENTITÉ VALIDÉE EN BASE. Vous pouvez vous connecter.";
+                window.location.href = 'registre.html';
             }
-        }
-
-        // --- 3. ANIMATION DE CHARGEMENT ---
-        const messages = [
-            "Liaison cryptée établie...",
-            "Contournement des pare-feu...",
-            "Déchiffrement des dossiers confidentiels...",
-            "Vérification des accréditations...",
-            "Synchronisation avec le registre central..."
-        ];
-
-        function lancerImmersion() {
-            const loadingZone = document.getElementById('loading-zone');
-            loadingZone.style.display = 'block';
-            
-            const progressBar = document.getElementById('progress-bar');
-            const statusText = document.getElementById('status-text');
-            const percentageText = document.getElementById('percentage');
-            
-            let progress = 0;
-            
-            const interval = setInterval(() => {
-                progress += 1;
-                progressBar.style.width = progress + '%';
-                percentageText.innerText = progress + '%';
-                
-                if (progress === 20) statusText.innerText = messages[0];
-                if (progress === 45) statusText.innerText = messages[1];
-                if (progress === 65) statusText.innerText = messages[2];
-                if (progress === 85) statusText.innerText = messages[3];
-                if (progress === 95) statusText.innerText = messages[4];
-                
-                if (progress >= 100) {
-                    clearInterval(interval);
-                    statusText.innerText = "ACCÈS AUTORISÉ.";
-                    
-                    setTimeout(() => {
-                        window.location.href = 'registre.html'; 
-                    }, 800);
-                }
-            }, 30);
         }
     </script>
 </body>

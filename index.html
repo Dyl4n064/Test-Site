@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Connexion</title>
+    <title>Portail de Sécurité // ARK</title>
     <style>
         * {
             box-sizing: border-box;
@@ -12,7 +12,7 @@
         }
 
         body {
-            background-color: #0d0e12;
+            background-color: #05080c; 
             color: #d1d5db;
             font-family: 'Courier New', Courier, monospace;
             display: flex;
@@ -29,18 +29,27 @@
             display: block;
             position: absolute;
             top: 0; left: 0; bottom: 0; right: 0;
-            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.3) 50%), 
+                        linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 180, 255, 0.02), rgba(0, 180, 255, 0.04));
             z-index: 10;
             background-size: 100% 4px, 6px 100%;
             pointer-events: none;
+            animation: crt-pulse 0.15s infinite;
+        }
+
+        @keyframes crt-pulse {
+            0% { opacity: 0.98; }
+            50% { opacity: 1; }
+            100% { opacity: 0.99; }
         }
 
         .terminal-box {
             width: 90%;
             max-width: 550px;
-            background: rgba(17, 24, 39, 0.85);
-            border: 2px solid #00ff66;
-            box-shadow: 0 0 20px rgba(0, 255, 102, 0.2);
+            background: rgba(0, 0, 0, 0.75);
+            border: 1px solid #1b273a;
+            border-top: 4px solid #00b4ff;
+            box-shadow: 0 0 20px rgba(0, 180, 255, 0.1);
             padding: 30px;
             text-align: center;
             border-radius: 4px;
@@ -49,42 +58,96 @@
 
         h1 {
             font-size: 1.6rem;
-            color: #00ff66;
+            color: #00b4ff;
             letter-spacing: 2px;
-            margin-bottom: 15px;
+            margin-bottom: 10px;
             text-transform: uppercase;
-            text-shadow: 0 0 8px rgba(0, 255, 102, 0.5);
+            text-shadow: 0 0 4px rgba(0, 180, 255, 0.6), 0 0 10px rgba(0, 180, 255, 0.2);
         }
 
         .subtitle {
             font-size: 0.9rem;
-            color: #9ca3af;
-            margin-bottom: 40px;
+            color: #4c5a6e;
+            margin-bottom: 30px;
             text-transform: uppercase;
         }
 
-        /* Bouton Terminal */
+        /* Design des champs de saisie */
+        .input-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+        
+        .input-group label {
+            display: block;
+            color: #00b4ff;
+            font-size: 0.8rem;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        input {
+            width: 100%;
+            background: #000;
+            border: 1px solid #1b273a;
+            color: #fff;
+            padding: 12px;
+            font-family: 'Courier New', Courier, monospace;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        input:focus {
+            border-color: #00b4ff;
+            box-shadow: 0 0 12px rgba(0, 180, 255, 0.3);
+            background: #020407;
+        }
+
+        /* Organisation des boutons */
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
         .terminal-btn {
+            flex: 1;
             background: transparent;
-            color: #00ff66;
-            border: 2px solid #00ff66;
-            padding: 15px 30px;
-            font-size: 1.1rem;
+            color: #00b4ff;
+            border: 1px solid #00b4ff;
+            padding: 12px;
+            font-size: 0.9rem;
             font-family: 'Courier New', Courier, monospace;
             font-weight: bold;
             cursor: pointer;
             text-transform: uppercase;
-            letter-spacing: 1px;
             transition: all 0.3s ease;
-            outline: none;
-            position: relative;
-            overflow: hidden;
         }
 
         .terminal-btn:hover {
-            background: #00ff66;
-            color: #0d0e12;
-            box-shadow: 0 0 15px rgba(0, 255, 102, 0.6);
+            background: #00b4ff;
+            color: #000;
+            box-shadow: 0 0 15px rgba(0, 180, 255, 0.6);
+        }
+
+        .btn-secondary {
+            border-color: #4c5a6e;
+            color: #4c5a6e;
+        }
+
+        .btn-secondary:hover {
+            background: #4c5a6e;
+            color: #fff;
+            box-shadow: none;
+        }
+
+        /* Message d'erreur */
+        #auth-error {
+            color: #ff1111;
+            font-size: 0.85rem;
+            margin-top: 15px;
+            min-height: 20px;
+            text-shadow: 0 0 5px rgba(255, 17, 17, 0.5);
         }
 
         /* Zone de chargement cachée au début */
@@ -95,7 +158,7 @@
 
         .status-text {
             font-size: 0.9rem;
-            color: #00ff66;
+            color: #00b4ff;
             margin-bottom: 12px;
             text-align: left;
             height: 20px;
@@ -104,7 +167,7 @@
         .progress-bar-container {
             width: 100%;
             height: 24px;
-            border: 1px solid #00ff66;
+            border: 1px solid #00b4ff;
             padding: 2px;
             background: rgba(0, 0, 0, 0.5);
         }
@@ -112,63 +175,51 @@
         .progress-bar {
             width: 0%;
             height: 100%;
-            background-color: #00ff66;
-            box-shadow: 0 0 10px rgba(0, 255, 102, 0.8);
+            background-color: #00b4ff;
+            box-shadow: 0 0 10px rgba(0, 180, 255, 0.8);
             transition: width 0.1s linear;
         }
 
         .percentage {
             margin-top: 10px;
             font-size: 1rem;
-            color: #00ff66;
+            color: #00b4ff;
             text-align: right;
         }
 
-        /* =========================================
-           MODE TÉLÉPHONE (Responsive Design)
-           S'active sous 600 pixels de large
-           ========================================= */
         @media screen and (max-width: 600px) {
-            .terminal-box {
-                width: 95%;
-                padding: 20px; /* Moins d'espace perdu sur les bords */
-            }
-
-            h1 {
-                font-size: 1.2rem; /* Titre plus compact */
-            }
-
-            .subtitle {
-                font-size: 0.8rem;
-                margin-bottom: 30px;
-            }
-
-            .terminal-btn {
-                width: 100%; /* Le bouton prend toute la largeur pour être facilement tapoté */
-                padding: 12px 10px;
-                font-size: 0.95rem;
-            }
-
-            .status-text {
-                font-size: 0.8rem; /* Texte plus petit pour qu'il rentre */
-                height: auto; /* Permet au texte de passer sur deux lignes si besoin */
-                min-height: 35px; /* Évite que la barre saute si le texte passe à la ligne */
-            }
+            .terminal-box { padding: 20px; }
+            .btn-container { flex-direction: column; gap: 10px; }
         }
     </style>
 </head>
 <body>
 
     <div class="terminal-box">
-        <h1>Accès au système de sécurité</h1>
-        <p class="subtitle">Base de données confidentielle</p>
+        <h1>MAINFRAME CENTRAL</h1>
+        <p class="subtitle">Authentification requise</p>
         
-        <!-- Bouton d'entrée -->
-        <button id="entry-btn" class="terminal-btn" onclick="demarrerChargement()">Initialiser la connexion</button>
+        <div id="login-form">
+            <div class="input-group">
+                <label>Nom du Personnage</label>
+                <input type="text" id="auth_username" placeholder="Ex: Leon Kennedy" autocomplete="off">
+            </div>
+            
+            <div class="input-group">
+                <label>Code d'Accès</label>
+                <input type="password" id="auth_password" placeholder="••••••••">
+            </div>
+
+            <div id="auth-error"></div>
+
+            <div class="btn-container">
+                <button class="terminal-btn" onclick="tenterConnexion()">[ CONNEXION ]</button>
+                <button class="terminal-btn btn-secondary" onclick="creerCompte()">[ ENREGISTRER ]</button>
+            </div>
+        </div>
         
-        <!-- Conteneur de chargement -->
         <div id="loading-zone" class="loading-zone">
-            <div id="status-text" class="status-text">Initialisation du protocole...</div>
+            <div id="status-text" class="status-text">Vérification de l'identité...</div>
             <div class="progress-bar-container">
                 <div id="progress-bar" class="progress-bar"></div>
             </div>
@@ -176,21 +227,111 @@
         </div>
     </div>
 
+    <!-- Scripts Supabase -->
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
     <script>
-        // Liste des messages système pour l'immersion RP
+        // Initialisation de Supabase à partir du fichier config.js
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // --- FONCTION UTILITAIRE ---
+        // Transforme "Nom du Personnage" en faux email pour satisfaire Supabase
+        function genererEmailDepuisNom(nom) {
+            let nomPropre = nom.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+            nomPropre = nomPropre.toLowerCase().trim().replace(/[^a-z0-9]/g, '.');
+            return nomPropre + "@umbrella.corp";
+        }
+
+        // --- 1. FONCTION DE CONNEXION ---
+        async function tenterConnexion() {
+            const username = document.getElementById('auth_username').value;
+            const password = document.getElementById('auth_password').value;
+            const errorDiv = document.getElementById('auth-error');
+
+            if (!username || !password) {
+                errorDiv.innerText = "ERREUR : Saisissez votre identité.";
+                return;
+            }
+
+            const fauxEmail = genererEmailDepuisNom(username);
+            errorDiv.innerText = "[ INTERROGATION DES SERVEURS... ]";
+            errorDiv.style.color = "#00b4ff";
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email: fauxEmail,
+                password: password,
+            });
+
+            if (error) {
+                errorDiv.style.color = "#ff1111";
+                errorDiv.innerText = "ACCÈS REFUSÉ : Identité non reconnue.";
+                console.error(error);
+            } else {
+                document.getElementById('login-form').style.display = 'none';
+                lancerImmersion();
+            }
+        }
+
+        // --- 2. FONCTION D'INSCRIPTION ---
+        async function creerCompte() {
+            const username = document.getElementById('auth_username').value;
+            const password = document.getElementById('auth_password').value;
+            const errorDiv = document.getElementById('auth-error');
+
+            if (!username || !password) {
+                errorDiv.innerText = "ERREUR : Saisissez une identité et un code.";
+                return;
+            }
+            if (password.length < 6) {
+                errorDiv.innerText = "ERREUR : Le code d'accès doit contenir 6 caractères minimum.";
+                return;
+            }
+
+            const fauxEmail = genererEmailDepuisNom(username);
+            errorDiv.innerText = "[ ENREGISTREMENT DANS LA BASE... ]";
+            errorDiv.style.color = "#00b4ff";
+
+            // Étape 1 : Création du compte (Supabase gère le mot de passe ici de façon invisible et sécurisée)
+            const { data: authData, error: authError } = await supabaseClient.auth.signUp({
+                email: fauxEmail,
+                password: password,
+            });
+
+            if (authError) {
+                errorDiv.style.color = "#ff1111";
+                errorDiv.innerText = "ERREUR : L'enregistrement a échoué.";
+                console.error(authError);
+                return;
+            }
+
+            // Étape 2 : Insertion uniquement du nom public dans ta table 'agent'
+            const { error: dbError } = await supabaseClient
+                .from('agent') 
+                .insert([
+                    { nom_agent: username }
+                ]);
+
+            if (dbError) {
+                errorDiv.style.color = "#ff1111";
+                errorDiv.innerText = "ERREUR : Compte créé, mais impossible d'enregistrer le nom de l'agent.";
+                console.error(dbError);
+            } else {
+                errorDiv.style.color = "#00ff41";
+                errorDiv.innerText = "IDENTITÉ VALIDÉE EN BASE. Vous pouvez vous connecter.";
+            }
+        }
+
+        // --- 3. L'ANIMATION DE CHARGEMENT ---
         const messages = [
-            "Connexion au serveur sécurisé...",
-            "Contournement des protocoles de sécurité...",
-            "Déchiffrement des dossiers des sujets...",
-            "Vérification de l'intégrité des données...",
-            "Synchronisation finale..."
+            "Liaison cryptée établie...",
+            "Contournement des pare-feu...",
+            "Déchiffrement des données sensibles...",
+            "Vérification des accréditations...",
+            "Synchronisation avec le registre central..."
         ];
 
-        function demarrerChargement() {
-            // Masquer le bouton d'entrée
-            document.getElementById('entry-btn').style.display = 'none';
-            
-            // Afficher la barre de chargement
+        function lancerImmersion() {
             const loadingZone = document.getElementById('loading-zone');
             loadingZone.style.display = 'block';
             
@@ -200,13 +341,11 @@
             
             let progress = 0;
             
-            // Intervalle de progression de la barre
             const interval = setInterval(() => {
                 progress += 1;
                 progressBar.style.width = progress + '%';
                 percentageText.innerText = progress + '%';
                 
-                // Mettre à jour les messages d'ambiance selon l'avancement
                 if (progress === 20) statusText.innerText = messages[0];
                 if (progress === 45) statusText.innerText = messages[1];
                 if (progress === 65) statusText.innerText = messages[2];
@@ -215,14 +354,13 @@
                 
                 if (progress >= 100) {
                     clearInterval(interval);
-                    statusText.innerText = "Accès accordé !";
+                    statusText.innerText = "ACCÈS AUTORISÉ.";
                     
-                    // Redirection vers l'index après une mini pause de confort
                     setTimeout(() => {
-                        window.location.href = 'registre.html'; 
+                        window.location.href = 'console.html'; 
                     }, 800);
                 }
-            }, 50); // <-- (40ms = environ 4 secondes de chargement au total)
+            }, 30);
         }
     </script>
 </body>

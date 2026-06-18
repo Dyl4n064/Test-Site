@@ -39,6 +39,10 @@
 
         <h1>BASE DE DONNÉES PATHOGÈNES</h1>
         
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="[ RECHERCHER UNE SOUCHE... ]" onkeyup="filtrerSouches()" autocomplete="off">
+        </div>
+        
         <div id="contenu-souches">Chargement de la base de données...</div>
     </div>
     
@@ -107,10 +111,11 @@
                             ? souche.image_url
                             : `images/${souche.image_url || 'default.jpg'}`;
 
+                        // Ajout de la classe "nom-souche" sur le h3 pour faciliter la recherche
                         return `
                             <a href="fiche_souche.html?id=${souche.id}" class="card" style="display: block; text-decoration: none; color: inherit;">
                                 <img src="${imageSrc}" style="width:100%; height:200px; object-fit:cover; border-bottom: 2px solid #555;">
-                                <h3 style="margin: 10px 0 5px 0;">${souche.nom}</h3>
+                                <h3 class="nom-souche" style="margin: 10px 0 5px 0;">${souche.nom}</h3>
                                 <p style="font-size: 0.9em; color: #aaa; margin: 5px 0;">TYPE: ${souche.type || "Inconnu"}</p>
                                 <p style="font-size: 0.9em; color: #aaa; margin: 5px 0;">DANGER: ${souche.dangerosite || "Non défini"}</p>
                             </a>
@@ -128,6 +133,39 @@
             document.getElementById('contenu-souches').innerHTML = htmlOutput;
         }
         
+        // NOUVEAU : Fonction de filtrage en direct avec gestion des rubriques
+        function filtrerSouches() {
+            const texteRecherche = document.getElementById('search-input').value.toLowerCase();
+            const titresCategories = document.querySelectorAll('.categorie-titre');
+            const grilles = document.querySelectorAll('.roster-grid');
+
+            grilles.forEach((grille, index) => {
+                const cartes = grille.querySelectorAll('.card');
+                let cartesVisibles = 0;
+
+                cartes.forEach(carte => {
+                    // On cible spécifiquement la classe qu'on a ajoutée au titre
+                    const nom = carte.querySelector('.nom-souche').innerText.toLowerCase();
+                    
+                    if (nom.includes(texteRecherche)) {
+                        carte.style.display = 'block';
+                        cartesVisibles++;
+                    } else {
+                        carte.style.display = 'none';
+                    }
+                });
+
+                // Si aucune carte n'est visible dans cette grille, on cache aussi le titre de la catégorie !
+                if (cartesVisibles === 0) {
+                    grille.style.display = 'none';
+                    if(titresCategories[index]) titresCategories[index].style.display = 'none';
+                } else {
+                    grille.style.display = 'grid';
+                    if(titresCategories[index]) titresCategories[index].style.display = 'block';
+                }
+            });
+        }
+
         chargerSouches();
     </script>
 </body>

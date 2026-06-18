@@ -235,3 +235,14 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
         padding: 15px 5px;
     }
 }
+
+/* HORLOGE CENTRÉE (Option 1) */
+.horloge-centre {
+    flex: 1;
+    text-align: center;
+    font-size: 0.85em;
+    color: var(--text-color);
+    opacity: 0.6; /* Rend le texte plus discret */
+    letter-spacing: 2px;
+    margin: 0;
+}

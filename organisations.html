@@ -15,6 +15,10 @@
         </div>
 
         <h1>FACTIONS & ORGANISATIONS</h1>
+
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="[ RECHERCHER UNE ORGANISATION... ]" onkeyup="filtrerOrgas()" autocomplete="off">
+        </div>
         
         <div class="roster-grid" id="grille-orgas">Chargement des données...</div>
     </div>
@@ -53,15 +57,33 @@
                     ? orga.image_url
                     : `images/${orga.image_url || 'default_logo.png'}`;
 
+                // Ajout de la classe "nom-orga" sur le h3 pour la recherche
                 return `
                     <a href="fiche_orga.html?id=${orga.id}" class="card ${isDismantled ? 'status-decédé' : ''}" style="display: block; text-decoration: none; color: inherit;">
                         <img src="${imageSrc}" style="width:100%; height:200px; object-fit:contain; background:#000; border-bottom: 2px solid #555; padding: 10px;">
-                        <h3 style="margin: 10px 0 5px 0;">${orga.nom}</h3>
+                        <h3 class="nom-orga" style="margin: 10px 0 5px 0;">${orga.nom}</h3>
                         <p style="font-size: 0.9em; color: #aaa; margin: 5px 0;">TYPE: ${orga.type || "Inconnu"}</p>
                         <p style="font-size: 0.9em; color: ${isDismantled ? 'var(--danger-color)' : '#aaa'}; margin: 5px 0;">STATUT: ${orga.statut || "Non défini"}</p>
                     </a>
                 `;
             }).join('');
+        }
+
+        // NOUVEAU : Fonction de filtrage en direct
+        function filtrerOrgas() {
+            const texteRecherche = document.getElementById('search-input').value.toLowerCase();
+            const cartes = document.querySelectorAll('#grille-orgas .card');
+
+            cartes.forEach(carte => {
+                // Cible spécifiquement le nom de l'organisation
+                const nom = carte.querySelector('.nom-orga').innerText.toLowerCase();
+                
+                if (nom.includes(texteRecherche)) {
+                    carte.style.display = 'block';
+                } else {
+                    carte.style.display = 'none';
+                }
+            });
         }
         
         chargerOrgas();

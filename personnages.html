@@ -15,6 +15,12 @@
         </div>
         
         <h1>REGISTRE DES SUJETS</h1>
+        
+        <!-- NOUVEAU : La barre de recherche -->
+        <div class="search-container">
+            <input type="text" id="search-input" class="search-input" placeholder="[ RECHERCHER UNE IDENTITÉ... ]" onkeyup="filtrerRoster()" autocomplete="off">
+        </div>
+
         <div class="roster-grid" id="grille-dynamique">Chargement des données...</div>
     </div>
     
@@ -51,13 +57,33 @@
                 return `
                     <a href="fiche.html?id=${perso.id}" class="card ${isDead ? 'status-decédé' : ''}" style="display: block; text-decoration: none; color: inherit;">
                         <img src="${imageSrc}" style="width:100%; height:200px; object-fit:cover; border-bottom: 2px solid #555;">
-                        <h3 style="margin: 10px 0 5px 0;">${perso.nom}</h3>
+                        <h3 style="margin: 10px 0 5px 0;" class="nom-sujet">${perso.nom}</h3>
                         <p style="font-size: 0.9em; color: #aaa;">STATUT: ${perso.statut || "Inconnu"}</p>
                     </a>
                 `;
             }).join('');
         }
         
+        // NOUVEAU : La fonction de filtrage en direct
+        function filtrerRoster() {
+            // Récupère ce qui est tapé dans la barre, en minuscules
+            const texteRecherche = document.getElementById('search-input').value.toLowerCase();
+            // Récupère toutes les cartes de personnages
+            const cartes = document.querySelectorAll('#grille-dynamique .card');
+
+            cartes.forEach(carte => {
+                // Va chercher le nom du personnage dans la balise <h3>
+                const nom = carte.querySelector('.nom-sujet').innerText.toLowerCase();
+                
+                // Si le nom contient le texte recherché, on affiche la carte, sinon on la cache
+                if (nom.includes(texteRecherche)) {
+                    carte.style.display = 'block';
+                } else {
+                    carte.style.display = 'none';
+                }
+            });
+        }
+
         chargerRoster();
     </script>
 </body>

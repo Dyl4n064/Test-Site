@@ -242,7 +242,7 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     text-align: center;
     font-size: 0.85em;
     color: var(--text-color);
-    opacity: 0.6; /* Rend le texte plus discret */
+    opacity: 1;
     letter-spacing: 2px;
     margin: 0;
 }

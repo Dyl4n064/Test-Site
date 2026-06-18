@@ -246,3 +246,29 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     letter-spacing: 2px;
     margin: 0;
 }
+
+/* BARRE DE RECHERCHE */
+.search-container {
+    margin: 20px 0;
+}
+
+.search-input {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--accent-color);
+    color: var(--accent-color);
+    padding: 12px;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1em;
+    outline: none;
+    transition: 0.3s;
+}
+
+.search-input:focus {
+    box-shadow: 0 0 15px rgba(0, 255, 65, 0.4);
+    background: #000;
+}
+
+.search-input::placeholder {
+    color: rgba(0, 255, 65, 0.4);
+}

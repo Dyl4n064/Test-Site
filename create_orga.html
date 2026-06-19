@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Enregistrement // Organisation</title>
+    <title>Enregistrement d'une organisation</title>
 </head>
 <body>
     <div class="container">
@@ -60,7 +60,7 @@
                 console.error(error);
                 btn.innerText = originalText;
             } else { 
-                alert("SUCCÈS: Données synchronisées avec ARK."); 
+                alert("SUCCÈS: Données synchronisées avec la base de données."); 
                 window.location.href = 'fiche_orga.html?id=' + data[0].id; 
             }
         }

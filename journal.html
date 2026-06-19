@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <title>Journal de Bord // ARK</title>
+    <title>Journal de Bord</title>
     <style>
         .journal-layout {
             display: flex;
@@ -39,11 +39,11 @@
             border-color: var(--accent-color);
         }
 
-        /* --- STYLES DES ENTRÉES CLIQUABLES (Correction d'affichage) --- */
+        /* --- STYLES DES ENTRÉES CLIQUABLES (Zéro superposition) --- */
         .log-entry {
             border-left: 4px solid var(--accent-color);
             background: rgba(10, 15, 10, 0.9);
-            padding: 20px 20px 35px 20px; /* Plus d'espace en bas pour l'étiquette */
+            padding: 20px 20px 35px 20px; /* Marge interne agrandie en bas */
             margin-bottom: 20px;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
@@ -61,11 +61,11 @@
             content: "[ CONSULTER / MODIFIER ]";
             position: absolute;
             bottom: 10px; /* Placé en bas */
-            right: 20px; /* Placé à droite */
+            right: 20px;  /* Placé à droite */
             font-size: 0.75em;
             font-weight: bold;
             color: var(--accent-color);
-            background: rgba(10, 15, 10, 1); /* Fond noir opaque pour masquer le texte derrière */
+            background: rgba(10, 15, 10, 1); /* Fond noir opaque anti-superposition */
             padding: 4px 8px;
             border: 1px solid var(--accent-color);
             opacity: 0;
@@ -130,7 +130,6 @@
             display: flex;
             gap: 15px;
             margin-top: 20px;
-            flex-wrap: wrap; /* Permet aux boutons de passer à la ligne sur très petit écran */
         }
         
         .modal-boutons button {
@@ -155,19 +154,21 @@
         </div>
 
         <div style="text-align: center; margin-bottom: 30px;">
-            <h1>ARCHIVES PERSONNELLES</h1>
+            <h1>JOURNAL DE BORD</h1>
             <p style="color: #666;">Cryptage AES-256 activé. Lecture restreinte au créateur de l'entrée.</p>
         </div>
 
         <div class="journal-layout">
             
+            <!-- FORMULAIRE DE RÉDACTION -->
             <div class="zone-redaction">
-                <label style="color: var(--accent-color); display: block; margin-bottom: 10px;">> NOUVEAU RAPPORT :</label>
+                <label style="color: var(--accent-color); display: block; margin-bottom: 10px;">> NOUVELLE ENTRÉE :</label>
                 <textarea id="champ_texte" placeholder="Saisissez vos notes de terrain ici..."></textarea>
                 <button class="terminal-btn" onclick="publierJournal()" style="background: transparent; color: var(--accent-color); border: 1px solid var(--accent-color); margin-top: 10px; padding: 10px; width: 100%; cursor: pointer; font-family: 'Share Tech Mono', monospace; font-size: 1em; transition: 0.3s;">[ TRANSMETTRE AU SERVEUR ]</button>
                 <div id="message-systeme"></div>
             </div>
 
+            <!-- FIL D'ACTUALITÉ DES LOGS -->
             <div id="historique-journaux">
                 <p style="text-align: center; opacity: 0.5;">[ INTERROGATION DES SERVEURS... ]</p>
             </div>
@@ -175,6 +176,7 @@
         </div>
     </div>
 
+    <!-- SOUS-FENÊTRE EN SUPERPOSITION (MODAL) -->
     <div id="modal-edition" class="modal-overlay">
         <div class="modal-content">
             <h2 style="margin-top: 0; font-size: 1.2em;">> LECTURE / MODIFICATION ARCHIVE <span id="modal-id-display"></span></h2>
@@ -190,6 +192,7 @@
         </div>
     </div>
 
+    <!-- Mentions Légales -->
     <div class="mentions-legales">
         <p><strong>Mentions Légales :</strong> Ce registre est édité à titre personnel par Dyl4n06. Contact : dylancapron064@gmail.com.</p>
         <p>Hébergement : GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA).</p>
@@ -206,6 +209,7 @@
         let journauxLocaux = [];
         let indexJournalActuel = null;
 
+        // --- 1. CHARGEMENT ET CALCUL DE LA NUMÉROTATION ---
         async function chargerHistorique() {
             const conteneur = document.getElementById('historique-journaux');
             
@@ -221,16 +225,22 @@
             }
 
             if (data.length === 0) {
-                conteneur.innerHTML = `<p style="text-align: center; opacity: 0.5;">[ AUCUN DOSSIER PERSONNEL TROUVÉ ]</p>`;
+                conteneur.innerHTML = `<p style="text-align: center; opacity: 0.5;">[ AUCUNE ENTRÉE PERSONNELLE TROUVÉE ]</p>`;
                 return;
             }
 
             journauxLocaux = data; 
             conteneur.innerHTML = '';
 
+            // Nombre total d'entrées pour le calcul dynamique
+            const totalEntrees = data.length;
+
             data.forEach((entree, index) => {
                 const dateCreation = new Date(entree.created_at);
                 const dateFormatee = dateCreation.toLocaleDateString('fr-FR') + ' - ' + dateCreation.toLocaleTimeString('fr-FR');
+                
+                // Calcul de la position réelle (le premier élément index 0 est le plus récent, donc le numéro le plus élevé)
+                const numeroRapport = totalEntrees - index;
                 
                 let extrait = entree.contenu.substring(0, 80);
                 if (entree.contenu.length > 80) extrait += "...";
@@ -238,7 +248,7 @@
                 conteneur.innerHTML += `
                     <div class="log-entry" onclick="ouvrirModal(${index})">
                         <div class="log-header">
-                            <span>RÉF : #${entree.id.toString().substring(0, 8)}</span>
+                            <span>RAPPORT N°${numeroRapport}</span>
                             <span>${dateFormatee}</span>
                         </div>
                         <div class="log-content-preview">"${extrait}"</div>
@@ -247,6 +257,7 @@
             });
         }
 
+        // --- 2. CRÉATION D'UNE ENTRÉE ---
         async function publierJournal() {
             const champTexte = document.getElementById('champ_texte');
             const texteSaisi = champTexte.value.trim();
@@ -269,13 +280,13 @@
             }
         }
 
-        // --- GESTION DE LA FENÊTRE MODALE ---
-
+        // --- 3. INTERACTION AVEC LA FENÊTRE MODALE ---
         function ouvrirModal(index) {
             indexJournalActuel = index;
             const entree = journauxLocaux[index];
+            const numeroRapport = journauxLocaux.length - index; // Numérotation synchro avec la liste
             
-            document.getElementById('modal-id-display').innerText = '#' + entree.id.toString().substring(0, 8);
+            document.getElementById('modal-id-display').innerText = 'N°' + numeroRapport;
             document.getElementById('modal-texte').value = entree.contenu; 
             document.getElementById('modal-message').innerText = "";
             
@@ -287,6 +298,7 @@
             indexJournalActuel = null;
         }
 
+        // --- 4. ENREGISTRER UNE MODIFICATION ---
         async function sauvegarderModification() {
             const nouveauTexte = document.getElementById('modal-texte').value.trim();
             const messageDiv = document.getElementById('modal-message');
@@ -313,13 +325,12 @@
             }
         }
 
-        // NOUVEAU : Fonction pour effacer le journal de la base de données
+        // --- 5. SUPPRIMER UNE ENTRÉE ---
         async function supprimerJournal() {
             if (indexJournalActuel === null) return;
 
-            // Boîte de dialogue de sécurité pour éviter les miss-clicks
-            const confirmation = confirm("ATTENTION : Voulez-vous vraiment effacer cette archive ? Cette action est irréversible.");
-            if (!confirmation) return; // On annule si l'utilisateur clique sur "Annuler"
+            const confirmation = confirm("ATTENTION : Voulez-vous vraiment effacer cette entrée ? Cette action est irréversible.");
+            if (!confirmation) return;
 
             const idJournal = journauxLocaux[indexJournalActuel].id;
             const messageDiv = document.getElementById('modal-message');
@@ -335,18 +346,20 @@
             if (error) {
                 messageDiv.innerText = "ERREUR : " + error.message;
             } else {
-                messageDiv.innerText = "[ ARCHIVE EFFACÉE ]";
-                chargerHistorique(); // On met à jour la liste pour faire disparaître l'entrée
-                setTimeout(() => { fermerModal(); }, 1000); // On ferme la fenêtre
+                messageDiv.innerText = "[ ENTRÉE EFFACÉE ]";
+                chargerHistorique(); 
+                setTimeout(() => { fermerModal(); }, 1000); 
             }
         }
 
+        // Raccourci Clavier : Touche Echap pour fermer la modale
         window.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' || event.key === 'Esc') {
                 fermerModal();
             }
         });
 
+        // Initialisation de la page
         chargerHistorique();
     </script>
 </body>

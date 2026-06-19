@@ -39,11 +39,11 @@
             border-color: var(--accent-color);
         }
 
-        /* --- STYLES DES ENTRÉES CLIQUABLES --- */
+        /* --- STYLES DES ENTRÉES CLIQUABLES (Correction d'affichage) --- */
         .log-entry {
             border-left: 4px solid var(--accent-color);
             background: rgba(10, 15, 10, 0.9);
-            padding: 20px;
+            padding: 20px 20px 35px 20px; /* Plus d'espace en bas pour l'étiquette */
             margin-bottom: 20px;
             cursor: pointer;
             transition: all 0.2s ease-in-out;
@@ -60,10 +60,14 @@
         .log-entry::after {
             content: "[ CONSULTER / MODIFIER ]";
             position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 0.7em;
+            bottom: 10px; /* Placé en bas */
+            right: 20px; /* Placé à droite */
+            font-size: 0.75em;
+            font-weight: bold;
             color: var(--accent-color);
+            background: rgba(10, 15, 10, 1); /* Fond noir opaque pour masquer le texte derrière */
+            padding: 4px 8px;
+            border: 1px solid var(--accent-color);
             opacity: 0;
             transition: 0.3s;
         }
@@ -126,10 +130,20 @@
             display: flex;
             gap: 15px;
             margin-top: 20px;
+            flex-wrap: wrap; /* Permet aux boutons de passer à la ligne sur très petit écran */
         }
         
         .modal-boutons button {
             flex: 1;
+            padding: 10px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-weight: bold;
+            transition: 0.2s;
+        }
+        
+        .modal-boutons button:hover {
+            box-shadow: inset 0 0 10px currentColor;
         }
     </style>
 </head>
@@ -161,7 +175,6 @@
         </div>
     </div>
 
-    <!-- SOUS-FENÊTRE D'ÉDITION (MODAL) -->
     <div id="modal-edition" class="modal-overlay">
         <div class="modal-content">
             <h2 style="margin-top: 0; font-size: 1.2em;">> LECTURE / MODIFICATION ARCHIVE <span id="modal-id-display"></span></h2>
@@ -171,12 +184,12 @@
             
             <div class="modal-boutons">
                 <button onclick="sauvegarderModification()" style="background: transparent; color: var(--accent-color); border: 1px solid var(--accent-color);">[ METTRE À JOUR ]</button>
+                <button onclick="supprimerJournal()" style="background: transparent; color: var(--danger-color); border: 1px solid var(--danger-color);">[ SUPPRIMER ]</button>
                 <button onclick="fermerModal()" style="background: transparent; color: #aaa; border: 1px solid #aaa;">[ FERMER ]</button>
             </div>
         </div>
     </div>
 
-    <!-- Mentions Légales -->
     <div class="mentions-legales">
         <p><strong>Mentions Légales :</strong> Ce registre est édité à titre personnel par Dyl4n06. Contact : dylancapron064@gmail.com.</p>
         <p>Hébergement : GitHub Pages (GitHub Inc., 88 Colin P Kelly Jr St, San Francisco, CA 94107, USA).</p>
@@ -190,7 +203,6 @@
         
         if (!nomAgentComplet) window.location.href = 'index.html';
 
-        // Mémoire locale pour stocker les journaux chargés
         let journauxLocaux = [];
         let indexJournalActuel = null;
 
@@ -213,18 +225,16 @@
                 return;
             }
 
-            journauxLocaux = data; // Sauvegarde dans la mémoire
+            journauxLocaux = data; 
             conteneur.innerHTML = '';
 
             data.forEach((entree, index) => {
                 const dateCreation = new Date(entree.created_at);
                 const dateFormatee = dateCreation.toLocaleDateString('fr-FR') + ' - ' + dateCreation.toLocaleTimeString('fr-FR');
                 
-                // On crée un petit extrait de 80 caractères pour la prévisualisation
                 let extrait = entree.contenu.substring(0, 80);
                 if (entree.contenu.length > 80) extrait += "...";
                 
-                // Le onclick appelle la fonction ouvrirModal avec le numéro (index) du journal dans la liste
                 conteneur.innerHTML += `
                     <div class="log-entry" onclick="ouvrirModal(${index})">
                         <div class="log-header">
@@ -265,12 +275,10 @@
             indexJournalActuel = index;
             const entree = journauxLocaux[index];
             
-            // On remplit la fenêtre avec les vraies infos
             document.getElementById('modal-id-display').innerText = '#' + entree.id.toString().substring(0, 8);
-            document.getElementById('modal-texte').value = entree.contenu; // Texte complet affiché pour lecture/édition
+            document.getElementById('modal-texte').value = entree.contenu; 
             document.getElementById('modal-message').innerText = "";
             
-            // On affiche la fenêtre
             document.getElementById('modal-edition').style.display = 'flex';
         }
 
@@ -290,7 +298,6 @@
             messageDiv.style.color = "var(--accent-color)";
             messageDiv.innerText = "[ MISE À JOUR EN COURS... ]";
 
-            // Envoi de la modification à Supabase
             const { error } = await supabaseClient
                 .from('journal_bord')
                 .update({ contenu: nouveauTexte })
@@ -301,12 +308,39 @@
                 messageDiv.innerText = "ERREUR : " + error.message;
             } else {
                 messageDiv.innerText = "[ ENTRÉE MISE À JOUR ]";
-                chargerHistorique(); // Met à jour la liste en arrière-plan
-                setTimeout(() => { fermerModal(); }, 1000); // Ferme la fenêtre après 1 seconde
+                chargerHistorique(); 
+                setTimeout(() => { fermerModal(); }, 1000); 
             }
         }
 
-        // Fermer la modale si on appuie sur Echap
+        // NOUVEAU : Fonction pour effacer le journal de la base de données
+        async function supprimerJournal() {
+            if (indexJournalActuel === null) return;
+
+            // Boîte de dialogue de sécurité pour éviter les miss-clicks
+            const confirmation = confirm("ATTENTION : Voulez-vous vraiment effacer cette archive ? Cette action est irréversible.");
+            if (!confirmation) return; // On annule si l'utilisateur clique sur "Annuler"
+
+            const idJournal = journauxLocaux[indexJournalActuel].id;
+            const messageDiv = document.getElementById('modal-message');
+
+            messageDiv.style.color = "var(--danger-color)";
+            messageDiv.innerText = "[ SUPPRESSION EN COURS... ]";
+
+            const { error } = await supabaseClient
+                .from('journal_bord')
+                .delete()
+                .eq('id', idJournal);
+
+            if (error) {
+                messageDiv.innerText = "ERREUR : " + error.message;
+            } else {
+                messageDiv.innerText = "[ ARCHIVE EFFACÉE ]";
+                chargerHistorique(); // On met à jour la liste pour faire disparaître l'entrée
+                setTimeout(() => { fermerModal(); }, 1000); // On ferme la fenêtre
+            }
+        }
+
         window.addEventListener('keydown', function(event) {
             if (event.key === 'Escape' || event.key === 'Esc') {
                 fermerModal();

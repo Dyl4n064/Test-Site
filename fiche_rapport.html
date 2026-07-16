@@ -44,7 +44,7 @@
         
         .titre-rapport { 
             padding: 0 40px; 
-            font-size: 38px; /* TITRE PRINCIPAL AGRANDI */
+            font-size: 38px; 
             font-weight: bold; 
             margin-bottom: 5px; 
             color: #fff; 
@@ -77,7 +77,7 @@
             min-height: 200px; 
         }
 
-        /* LE STYLE POUR LES TITRES DE SECTIONS AGRANDIS */
+        /* LE STYLE POUR LES TITRES DE SECTIONS AGRANDIS (##) */
         .section-titre {
             font-size: 28px;
             color: var(--accent-color);
@@ -87,6 +87,18 @@
             border-bottom: 1px solid var(--border-color);
             padding-bottom: 5px;
             text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+        }
+
+        /* LE STYLE POUR LES SOUS-TITRES (#) */
+        .sous-titre {
+            font-size: 22px;
+            color: var(--accent-color);
+            margin-top: 25px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            border-left: 3px solid var(--accent-color);
+            padding-left: 10px;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.3);
         }
 
         .dossier-footer { 
@@ -135,9 +147,8 @@
             
             <div class="dossier-header-doc">
                 <div class="logo-section">
-                    <!-- Remplacement du logo noir par un logo vert ou blanc adapté au fond sombre si besoin -->
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Umbrella_Corporation_logo.svg/512px-Umbrella_Corporation_logo.svg.png" alt="Logo">
-                    <div class="logo-text">TEST<br><span style="font-size:14px; font-weight:normal; color: var(--text-color);">Test</span></div>
+                    <div class="logo-text">UMBRELLA<br><span style="font-size:14px; font-weight:normal; color: var(--text-color);">RED QUEEN DB</span></div>
                 </div>
                 <div class="meta-section">
                     ID SYSTÈME : <span id="r_id_display">CHARGEMENT...</span><br>
@@ -147,7 +158,7 @@
             </div>
 
             <div class="titre-rapport" id="r_titre_container">
-                <span style="font-size: 18px; color: var(--accent-color);">RAPPORT D'ENQUÊTE //</span><br>
+                <span style="font-size: 18px; color: var(--accent-color);">ANALYSE DE DONNÉES //</span><br>
                 <span id="r_titre">CHARGEMENT...</span>
             </div>
 
@@ -160,9 +171,9 @@
             <div class="contenu-digital" id="r_contenu"></div>
 
             <div class="pagination-bar" id="pagination_ui" style="display: none;">
-                <button id="btn_prev" onclick="changerPage(-1)">&lt; PAGE PRÉCÉDENTE</button>
-                <span id="page_info">PAGE 1 / 1</span>
-                <button id="btn_next" onclick="changerPage(1)">PAGE SUIVANTE &gt;</button>
+                <button id="btn_prev" onclick="changerPage(-1)">&lt; BLOC PRÉCÉDENT</button>
+                <span id="page_info">BLOC 1 / 1</span>
+                <button id="btn_next" onclick="changerPage(1)">BLOC SUIVANT &gt;</button>
             </div>
 
             <div class="dossier-footer">
@@ -234,9 +245,11 @@
             // 1. Remplacement des images
             texteDeLaPage = texteDeLaPage.replace(/\[IMG:(.+?)\]/g, '<img src="$1" class="photo-incrustee" alt="Archive visuelle">');
             
-            // 2. NOUVEAUTÉ : Création des gros titres
-            // Tout texte précédé de "## " sera transformé en titre de section
+            // 2. Création des GROS TITRES de section (##)
             texteDeLaPage = texteDeLaPage.replace(/##\s*(.+)/g, '<div class="section-titre">$1</div>');
+
+            // 3. Création des SOUS-TITRES (#)
+            texteDeLaPage = texteDeLaPage.replace(/#\s*(.+)/g, '<div class="sous-titre">$1</div>');
 
             document.getElementById('r_contenu').innerHTML = texteDeLaPage;
             document.getElementById('page_info').innerText = `BLOC ${pageCourante + 1} / ${pagesArray.length}`;
@@ -264,11 +277,13 @@
             document.getElementById('edit_image_url').value = r.image_url || '';
             document.getElementById('edit_auteur').value = r.auteur_enquete || '';
 
+            // Mise à jour de l'aide avec la commande sous-titre (#)
             let aideTexte = `<div style="font-size:13px; color:var(--danger-color); margin-bottom:15px; border: 1px solid var(--danger-color); padding: 10px;">
                 COMMANDES TERMINAL DISPONIBLES :<br>
-                - Pour créer un gros titre de section, tape : <strong>## Ton Titre</strong><br>
-                - Pour couper la page, tape : <strong>===PAGE===</strong><br>
-                - Pour insérer une image, tape : <strong>[IMG:lien_de_l_image.jpg]</strong>
+                - Titre principal : <strong>## Ton Titre</strong><br>
+                - Sous-titre : <strong># Ton Sous-titre</strong><br>
+                - Couper la page : <strong>===PAGE===</strong><br>
+                - Insérer une image : <strong>[IMG:lien_de_l_image.jpg]</strong>
             </div>`;
             document.getElementById('r_contenu').innerHTML = aideTexte + `<textarea id="edit_contenu" class="edit-input"></textarea>`;
             document.getElementById('edit_contenu').value = r.contenu || '';

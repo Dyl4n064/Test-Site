@@ -8,9 +8,32 @@
     <title>Rapport d'Enquête</title>
 
     <style>
-        /* --- STYLES PRÉCÉDENTS --- */
-        body { background-color: #111; display: flex; justify-content: center; padding: 20px; }
-        .dossier-wrapper { background-color: #dfd5c1; width: 100%; max-width: 800px; box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 50px rgba(150, 130, 100, 0.3); border-radius: 5px 15px 15px 5px; color: #222; font-family: 'Inter', sans-serif; position: relative; overflow: hidden; border-left: 3px solid #b8ab94; }
+        /* On ne définit plus le body ici, on laisse style.css gérer le fond sombre et les scanlines */
+        
+        .page-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding-bottom: 50px;
+        }
+
+        /* Le Dossier Physique avec une ombre teintée vert néon pour l'intégrer au terminal */
+        .dossier-wrapper {
+            background-color: #dfd5c1; 
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 0 40px rgba(0, 255, 65, 0.15), inset 0 0 50px rgba(150, 130, 100, 0.3);
+            border-radius: 5px 15px 15px 5px; 
+            color: #222;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+            border-left: 3px solid #b8ab94;
+            z-index: 10; /* Pour passer au-dessus des scanlines du body */
+        }
+
+        /* --- STYLES DU DOSSIER (Identiques à la version papier) --- */
         .dossier-header-doc { display: flex; justify-content: space-between; align-items: flex-start; padding: 40px 40px 20px 40px; border-bottom: 2px solid #a3957f; margin-bottom: 30px; }
         .logo-section { display: flex; align-items: center; gap: 10px; }
         .logo-section img { width: 40px; height: 40px; }
@@ -29,13 +52,8 @@
         .barcode { font-family: 'Libre Barcode 39', cursive; font-size: 45px; color: #111; }
         .confidentiel-stamp { color: #b30000; font-weight: bold; font-size: 14px; text-align: right; text-transform: uppercase; letter-spacing: 2px; }
         .confidentiel-stamp span { display: block; font-size: 9px; color: #555; letter-spacing: 0; margin-top: 5px; }
-        .controls { margin-bottom: 20px; display: flex; justify-content: space-between; }
-        .controls button { background: #333; color: #dfd5c1; border: 1px solid #dfd5c1; padding: 8px 15px; cursor: pointer; font-family: 'Courier Prime', monospace; font-weight: bold; }
-        .controls button:hover { background: #dfd5c1; color: #333; }
-        .edit-input { width: 100%; background: rgba(255,255,255,0.5); border: 1px dashed #990000; font-family: inherit; font-size: inherit; padding: 5px; box-sizing: border-box; }
-        textarea.edit-input { height: 400px; resize: vertical; }
 
-        /* --- NOUVEAUX STYLES : PAGINATION ET IMAGES INCRUSTÉES --- */
+        /* --- STYLES DE PAGINATION & ÉDITION HYBRIDES --- */
         .pagination-bar {
             display: flex;
             justify-content: space-between;
@@ -51,9 +69,10 @@
             padding: 5px 15px;
             cursor: pointer;
             font-weight: bold;
+            transition: 0.2s;
         }
         .pagination-bar button:disabled { opacity: 0.3; cursor: not-allowed; }
-        .pagination-bar button:hover:not(:disabled) { background: #333; color: #dfd5c1; }
+        .pagination-bar button:hover:not(:disabled) { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
         
         .photo-incrustee {
             display: block;
@@ -61,28 +80,43 @@
             margin: 20px auto;
             border: 6px solid #fff;
             box-shadow: 2px 4px 10px rgba(0,0,0,0.3);
-            transform: rotate(2deg); /* Donne un côté "photo posée à la va-vite" */
+            transform: rotate(2deg);
         }
-        .photo-incrustee:nth-child(even) {
-            transform: rotate(-1.5deg);
+        .photo-incrustee:nth-child(even) { transform: rotate(-1.5deg); }
+
+        /* Champs d'édition stylisés façon terminal par-dessus le papier */
+        .edit-input {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.8) !important;
+            border: 1px solid var(--accent-color) !important;
+            color: var(--accent-color) !important;
+            font-family: 'Share Tech Mono', monospace !important;
+            font-size: 16px;
+            padding: 10px;
+            box-sizing: border-box;
+            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.2);
         }
+        textarea.edit-input { height: 400px; resize: vertical; }
     </style>
 </head>
 <body>
 
-    <div style="width: 100%; max-width: 800px;">
+    <div class="page-wrapper">
         
-        <div class="controls" id="content_layout" style="display: none;">
-            <button onclick="window.location.href='rapports.html'">[RETOUR AUX ARCHIVES]</button>
-            <button id="btn_mode" onclick="basculerMode()">[ÉDITER LE RAPPORT]</button>
+        <!-- EN-TÊTE TERMINAL (Utilise les classes de ton style.css) -->
+        <div class="terminal-header" id="content_layout" style="display: none; width: 100%; max-width: 800px; justify-content: center; gap: 20px;">
+            <!-- J'utilise ici ta classe .btn-retour pour l'animation au survol -->
+            <button class="btn-retour" onclick="window.location.href='rapports.html'" style="width: auto;">[RETOUR AUX ARCHIVES]</button>
+            <button class="btn-retour btn-enregistrer" id="btn_mode" onclick="basculerMode()" style="width: auto;">[ÉDITER LE RAPPORT]</button>
         </div>
 
+        <!-- LE DOSSIER PAPIER -->
         <div class="dossier-wrapper">
             
             <div class="dossier-header-doc">
                 <div class="logo-section">
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Umbrella_Corporation_logo.svg/512px-Umbrella_Corporation_logo.svg.png" alt="Logo">
-                    <div class="logo-text"><br><span style="font-size:12px; font-weight:normal;"></span></div>
+                    <div class="logo-text">UMBRELLA<br><span style="font-size:12px; font-weight:normal;">CORPORATION</span></div>
                 </div>
                 <div class="meta-section">
                     N° DOSSIER : <span id="r_id_display">CHARGEMENT...</span><br>
@@ -92,7 +126,7 @@
             </div>
 
             <div class="titre-rapport" id="r_titre_container">
-                Rapport d'enquête<br>
+                Notes d'Umbrella<br>
                 <span style="font-size: 16px; text-transform: uppercase;" id="r_titre">CHARGEMENT...</span>
             </div>
 
@@ -104,21 +138,19 @@
 
             <div class="info-grid" id="r_details"></div>
 
-            <!-- Contenu du rapport -->
             <div class="contenu-manuscrit" id="r_contenu"></div>
 
-            <!-- Contrôles de pagination -->
             <div class="pagination-bar" id="pagination_ui" style="display: none;">
-                <button id="btn_prev" onclick="changerPage(-1)">&lt; PAGE PRÉCÉDENTE</button>
+                <button id="btn_prev" onclick="changerPage(-1)">&lt; FEUILLET PRÉCÉDENT</button>
                 <span id="page_info">PAGE 1 / 1</span>
-                <button id="btn_next" onclick="changerPage(1)">PAGE SUIVANTE &gt;</button>
+                <button id="btn_next" onclick="changerPage(1)">FEUILLET SUIVANT &gt;</button>
             </div>
 
             <div class="dossier-footer">
                 <div class="barcode">*UBC-27A-GRACE*</div>
                 <div class="confidentiel-stamp">
                     CONFIDENTIEL
-                    <span>Ce document est la propriété de... <br>Toute reproduction ou divulgation est strictement interdite.</span>
+                    <span>Ce document est la propriété d'Umbrella Corporation.<br>Toute reproduction ou divulgation est strictement interdite.</span>
                 </div>
             </div>
         </div>
@@ -132,8 +164,6 @@
         let r = {}; 
         let id = null;
         let modeEdition = false;
-
-        // Variables pour la pagination
         let pagesArray = [];
         let pageCourante = 0;
 
@@ -171,30 +201,18 @@
                 <div><strong>STATUT :</strong> EN OBSERVATION</div>
             `;
 
-            // --- LOGIQUE DE DÉCOUPAGE DES PAGES ---
             let contenuBrut = r.contenu || "Aucun contenu textuel consigné pour cette enquête.";
-            // On sépare le texte à chaque fois qu'il y a ===PAGE===
             pagesArray = contenuBrut.split('===PAGE===');
-            pageCourante = 0; // On remet à la page 1
+            pageCourante = 0; 
 
-            // On affiche ou cache la barre de pagination si on a plus d'une page
             document.getElementById('pagination_ui').style.display = pagesArray.length > 1 ? 'flex' : 'none';
-            
             afficherPageCourante();
         }
 
         function afficherPageCourante() {
             let texteDeLaPage = pagesArray[pageCourante];
-
-            // --- LOGIQUE D'INSERTION DES IMAGES ---
-            // On cherche tout ce qui ressemble à [IMG:url] et on le remplace par une balise html <img>
-            // Pour éviter que l'image colle au texte, on utilise l'expression régulière :
             texteDeLaPage = texteDeLaPage.replace(/\[IMG:(.+?)\]/g, '<img src="$1" class="photo-incrustee" alt="Archive visuelle">');
-
-            // On injecte le résultat dans le HTML
             document.getElementById('r_contenu').innerHTML = texteDeLaPage;
-
-            // Mise à jour des boutons et du compteur
             document.getElementById('page_info').innerText = `FEUILLET ${pageCourante + 1} / ${pagesArray.length}`;
             document.getElementById('btn_prev').disabled = (pageCourante === 0);
             document.getElementById('btn_next').disabled = (pageCourante === pagesArray.length - 1);
@@ -208,11 +226,9 @@
         function afficherModeEdition() {
             modeEdition = true;
             document.getElementById('btn_mode').innerText = "[SAUVEGARDER LES MODIFICATIONS]";
-            
-            // On cache la pagination pendant l'édition car on affiche tout le texte brut d'un coup
             document.getElementById('pagination_ui').style.display = 'none';
 
-            document.getElementById('r_titre').innerHTML = `RAPPORT D'ANALYSE : SUJET <input type="text" id="edit_titre" class="edit-input" style="width: auto; display: inline-block;">`;
+            document.getElementById('r_titre').innerHTML = `RAPPORT D'ANALYSE : SUJET <input type="text" id="edit_titre" class="edit-input" style="width: 100%; margin-top: 10px;">`;
             document.getElementById('edit_titre').value = r.titre || '';
             
             document.getElementById('r_details').innerHTML = `
@@ -222,12 +238,8 @@
             document.getElementById('edit_image_url').value = r.image_url || '';
             document.getElementById('edit_auteur').value = r.auteur_enquete || '';
 
-            // Petite note d'aide affichée au-dessus de la zone de texte
-            let aideTexte = `<div style="font-family:'Courier Prime', monospace; font-size:12px; color:#990000; margin-bottom:10px;">ASTUCES D'ÉDITION :<br>- Pour créer une nouvelle page, passe à la ligne et tape : ===PAGE===<br>- Pour insérer une image, tape : [IMG:lien-de-la-photo.jpg]</div>`;
-            
+            let aideTexte = `<div style="font-family:'Courier Prime', monospace; font-size:12px; color:#990000; margin-bottom:10px;">ASTUCES D'ÉDITION :<br>- Coupe de page : ===PAGE===<br>- Image : [IMG:lien.jpg]</div>`;
             document.getElementById('r_contenu').innerHTML = aideTexte + `<textarea id="edit_contenu" class="edit-input"></textarea>`;
-            
-            // On remet le texte brut complet (avec les balises) dans la zone d'édition
             document.getElementById('edit_contenu').value = r.contenu || '';
         }
 
@@ -244,7 +256,7 @@
                 titre: document.getElementById('edit_titre').value,
                 image_url: document.getElementById('edit_image_url').value,
                 auteur_enquete: document.getElementById('edit_auteur').value,
-                contenu: document.getElementById('edit_contenu').value // On sauvegarde le texte brut avec les balises
+                contenu: document.getElementById('edit_contenu').value 
             };
 
             const { error } = await supabaseClient.from('rapports_enquete').update(modifications).eq('id', id);
@@ -254,7 +266,7 @@
                 btn.innerText = "[RÉESSAYER]"; 
             } else {
                 r = { ...r, ...modifications };
-                afficherModeLecture(); // Cela va relancer le découpage des pages
+                afficherModeLecture(); 
             }
         }
 

@@ -4,12 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Libre+Barcode+39&family=Inter:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
     <title>Rapport d'Enquête</title>
 
     <style>
-        /* On ne définit plus le body ici, on laisse style.css gérer le fond sombre et les scanlines */
-        
         .page-wrapper {
             display: flex;
             flex-direction: column;
@@ -18,83 +16,108 @@
             padding-bottom: 50px;
         }
 
-        /* Le Dossier Physique avec une ombre teintée vert néon pour l'intégrer au terminal */
+        /* LE DOSSIER NUMÉRIQUE : Noir profond, bordures et ombres vertes */
         .dossier-wrapper {
-            background-color: #dfd5c1; 
+            background-color: rgba(5, 5, 5, 0.95); 
             width: 100%;
             max-width: 800px;
-            box-shadow: 0 0 40px rgba(0, 255, 65, 0.15), inset 0 0 50px rgba(150, 130, 100, 0.3);
-            border-radius: 5px 15px 15px 5px; 
-            color: #222;
-            font-family: 'Inter', sans-serif;
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.2);
+            border: 1px solid var(--accent-color);
+            color: var(--text-color);
+            font-family: 'Share Tech Mono', monospace;
             position: relative;
             overflow: hidden;
-            border-left: 3px solid #b8ab94;
-            z-index: 10; /* Pour passer au-dessus des scanlines du body */
+            z-index: 10;
         }
 
-        /* --- STYLES DU DOSSIER (Identiques à la version papier) --- */
-        .dossier-header-doc { display: flex; justify-content: space-between; align-items: flex-start; padding: 40px 40px 20px 40px; border-bottom: 2px solid #a3957f; margin-bottom: 30px; }
-        .logo-section { display: flex; align-items: center; gap: 10px; }
-        .logo-section img { width: 40px; height: 40px; }
-        .logo-text { font-size: 20px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; }
-        .meta-section { font-family: 'Courier Prime', monospace; color: #990000; font-size: 12px; line-height: 1.5; text-align: right; }
-        .titre-rapport { padding: 0 40px; font-size: 32px; font-weight: 900; margin-bottom: 5px; color: #1a1a1a; }
-        .photo-container { position: relative; width: 80%; margin: 30px auto; background: #fff; padding: 10px 10px 35px 10px; box-shadow: 2px 4px 15px rgba(0,0,0,0.2); transform: rotate(-1deg); }
-        .photo-container img { width: 100%; height: auto; max-height: 400px; object-fit: cover; filter: contrast(1.1) sepia(0.2); }
-        .tape { position: absolute; width: 90px; height: 25px; background-color: rgba(220, 215, 190, 0.6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); backdrop-filter: blur(2px); }
-        .tape-top { top: -10px; left: -20px; transform: rotate(-35deg); }
-        .tape-bottom { bottom: 10px; right: -25px; transform: rotate(-25deg); }
-        .info-grid { margin: 0 40px 30px 40px; border: 1px solid #333; display: grid; grid-template-columns: 1fr 1fr; font-family: 'Courier Prime', monospace; font-size: 13px; background: rgba(255, 255, 255, 0.2); }
-        .info-grid div { padding: 10px; border: 1px solid #333; }
-        .contenu-manuscrit { padding: 0 40px 10px 40px; font-family: 'Caveat', cursive; font-size: 24px; line-height: 1.4; color: #2b2b2b; white-space: pre-wrap; min-height: 200px; }
-        .dossier-footer { display: flex; justify-content: space-between; align-items: center; padding: 20px 40px; border-top: 1px dashed #a3957f; }
-        .barcode { font-family: 'Libre Barcode 39', cursive; font-size: 45px; color: #111; }
-        .confidentiel-stamp { color: #b30000; font-weight: bold; font-size: 14px; text-align: right; text-transform: uppercase; letter-spacing: 2px; }
-        .confidentiel-stamp span { display: block; font-size: 9px; color: #555; letter-spacing: 0; margin-top: 5px; }
+        /* --- STYLES DU DOSSIER TERMINAL --- */
+        .dossier-header-doc { 
+            display: flex; justify-content: space-between; align-items: flex-start; 
+            padding: 30px 40px 20px 40px; 
+            border-bottom: 1px dashed var(--accent-color); 
+            margin-bottom: 30px; 
+        }
+        .logo-section { display: flex; align-items: center; gap: 15px; }
+        .logo-section img { width: 50px; height: 50px; filter: drop-shadow(0 0 5px var(--accent-color)); }
+        .logo-text { font-size: 22px; font-weight: bold; letter-spacing: 2px; color: var(--accent-color); }
+        .meta-section { color: var(--accent-color); font-size: 14px; line-height: 1.6; text-align: right; }
+        
+        .titre-rapport { 
+            padding: 0 40px; 
+            font-size: 38px; /* TITRE PRINCIPAL AGRANDI */
+            font-weight: bold; 
+            margin-bottom: 5px; 
+            color: #fff; 
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+        }
+        
+        .photo-container { 
+            position: relative; width: 80%; margin: 30px auto; 
+            border: 1px solid var(--accent-color);
+            padding: 5px; 
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2); 
+            background: #000;
+        }
+        .photo-container img { width: 100%; height: auto; max-height: 400px; object-fit: cover; opacity: 0.9; filter: grayscale(20%) contrast(1.2); }
+        
+        .info-grid { 
+            margin: 0 40px 30px 40px; 
+            border: 1px solid var(--accent-color); 
+            display: grid; grid-template-columns: 1fr 1fr; 
+            font-size: 15px; background: rgba(0, 255, 65, 0.05); 
+        }
+        .info-grid div { padding: 12px; border: 1px solid var(--accent-color); color: var(--accent-color); }
+        
+        .contenu-digital { 
+            padding: 0 40px 10px 40px; 
+            font-size: 18px; 
+            line-height: 1.6; 
+            color: var(--text-color); 
+            white-space: pre-wrap; 
+            min-height: 200px; 
+        }
 
-        /* --- STYLES DE PAGINATION & ÉDITION HYBRIDES --- */
+        /* LE STYLE POUR LES TITRES DE SECTIONS AGRANDIS */
+        .section-titre {
+            font-size: 28px;
+            color: var(--accent-color);
+            margin-top: 35px;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 5px;
+            text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
+        }
+
+        .dossier-footer { 
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 20px 40px; border-top: 1px dashed var(--accent-color); 
+        }
+        .confidentiel-stamp { color: var(--danger-color); font-weight: bold; font-size: 16px; text-align: right; text-transform: uppercase; letter-spacing: 2px; }
+        .confidentiel-stamp span { display: block; font-size: 11px; color: var(--text-color); letter-spacing: 0; margin-top: 5px; }
+
+        /* --- STYLES DE PAGINATION & ÉDITION --- */
         .pagination-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 40px 30px 40px;
-            font-family: 'Courier Prime', monospace;
-            font-size: 14px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 40px 30px 40px; font-size: 16px; color: var(--accent-color);
         }
         .pagination-bar button {
-            background: transparent;
-            border: 1px solid #333;
-            color: #333;
-            padding: 5px 15px;
-            cursor: pointer;
-            font-weight: bold;
-            transition: 0.2s;
+            background: transparent; border: 1px solid var(--accent-color); color: var(--accent-color);
+            padding: 8px 15px; cursor: pointer; font-weight: bold; transition: 0.2s; font-family: 'Share Tech Mono', monospace;
         }
-        .pagination-bar button:disabled { opacity: 0.3; cursor: not-allowed; }
-        .pagination-bar button:hover:not(:disabled) { background: var(--accent-color); color: #000; border-color: var(--accent-color); }
+        .pagination-bar button:disabled { opacity: 0.3; cursor: not-allowed; border-color: var(--border-color); color: var(--border-color); }
+        .pagination-bar button:hover:not(:disabled) { background: var(--accent-color); color: #000; box-shadow: 0 0 10px var(--accent-color); }
         
         .photo-incrustee {
-            display: block;
-            max-width: 90%;
-            margin: 20px auto;
-            border: 6px solid #fff;
-            box-shadow: 2px 4px 10px rgba(0,0,0,0.3);
-            transform: rotate(2deg);
+            display: block; max-width: 90%; margin: 20px auto;
+            border: 1px solid var(--accent-color); box-shadow: 0 0 10px rgba(0,255,65,0.2);
         }
-        .photo-incrustee:nth-child(even) { transform: rotate(-1.5deg); }
 
-        /* Champs d'édition stylisés façon terminal par-dessus le papier */
         .edit-input {
-            width: 100%;
-            background: rgba(0, 0, 0, 0.8) !important;
-            border: 1px solid var(--accent-color) !important;
-            color: var(--accent-color) !important;
-            font-family: 'Share Tech Mono', monospace !important;
-            font-size: 16px;
-            padding: 10px;
-            box-sizing: border-box;
-            box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.2);
+            width: 100%; background: rgba(0, 0, 0, 0.8) !important;
+            border: 1px solid var(--accent-color) !important; color: var(--accent-color) !important;
+            font-family: 'Share Tech Mono', monospace !important; font-size: 16px;
+            padding: 12px; box-sizing: border-box; box-shadow: inset 0 0 10px rgba(0, 255, 65, 0.1);
         }
         textarea.edit-input { height: 400px; resize: vertical; }
     </style>
@@ -103,54 +126,50 @@
 
     <div class="page-wrapper">
         
-        <!-- EN-TÊTE TERMINAL (Utilise les classes de ton style.css) -->
         <div class="terminal-header" id="content_layout" style="display: none; width: 100%; max-width: 800px; justify-content: center; gap: 20px;">
-            <!-- J'utilise ici ta classe .btn-retour pour l'animation au survol -->
             <button class="btn-retour" onclick="window.location.href='rapports.html'" style="width: auto;">[RETOUR AUX ARCHIVES]</button>
             <button class="btn-retour btn-enregistrer" id="btn_mode" onclick="basculerMode()" style="width: auto;">[ÉDITER LE RAPPORT]</button>
         </div>
 
-        <!-- LE DOSSIER PAPIER -->
         <div class="dossier-wrapper">
             
             <div class="dossier-header-doc">
                 <div class="logo-section">
+                    <!-- Remplacement du logo noir par un logo vert ou blanc adapté au fond sombre si besoin -->
                     <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Umbrella_Corporation_logo.svg/512px-Umbrella_Corporation_logo.svg.png" alt="Logo">
-                    <div class="logo-text">UMBRELLA<br><span style="font-size:12px; font-weight:normal;">CORPORATION</span></div>
+                    <div class="logo-text">TEST<br><span style="font-size:14px; font-weight:normal; color: var(--text-color);">Test</span></div>
                 </div>
                 <div class="meta-section">
-                    N° DOSSIER : <span id="r_id_display">CHARGEMENT...</span><br>
-                    NIVEAU DE SÉCURITÉ : 4<br>
-                    DATE : <span id="r_date_display">--.--.----</span>
+                    ID SYSTÈME : <span id="r_id_display">CHARGEMENT...</span><br>
+                    NIVEAU D'ACCÈS : OMEGA<br>
+                    HORODATAGE : <span id="r_date_display">--.--.----</span>
                 </div>
             </div>
 
             <div class="titre-rapport" id="r_titre_container">
-                Notes d'Umbrella<br>
-                <span style="font-size: 16px; text-transform: uppercase;" id="r_titre">CHARGEMENT...</span>
+                <span style="font-size: 18px; color: var(--accent-color);">RAPPORT D'ENQUÊTE //</span><br>
+                <span id="r_titre">CHARGEMENT...</span>
             </div>
 
             <div class="photo-container" id="bloc_photo_principale">
-                <div class="tape tape-top"></div>
-                <img id="r_img" src="" alt="Photo du sujet">
-                <div class="tape tape-bottom"></div>
+                <img id="r_img" src="" alt="Fichier Visuel">
             </div>
 
             <div class="info-grid" id="r_details"></div>
 
-            <div class="contenu-manuscrit" id="r_contenu"></div>
+            <div class="contenu-digital" id="r_contenu"></div>
 
             <div class="pagination-bar" id="pagination_ui" style="display: none;">
-                <button id="btn_prev" onclick="changerPage(-1)">&lt; FEUILLET PRÉCÉDENT</button>
+                <button id="btn_prev" onclick="changerPage(-1)">&lt; PAGE PRÉCÉDENTE</button>
                 <span id="page_info">PAGE 1 / 1</span>
-                <button id="btn_next" onclick="changerPage(1)">FEUILLET SUIVANT &gt;</button>
+                <button id="btn_next" onclick="changerPage(1)">PAGE SUIVANTE &gt;</button>
             </div>
 
             <div class="dossier-footer">
-                <div class="barcode">*UBC-27A-GRACE*</div>
+                <div style="font-size: 20px; color: var(--accent-color);">*UBC-SECURE-FILE*</div>
                 <div class="confidentiel-stamp">
-                    CONFIDENTIEL
-                    <span>Ce document est la propriété d'Umbrella Corporation.<br>Toute reproduction ou divulgation est strictement interdite.</span>
+                    RESTREINT
+                    <span>Violation du protocole passible d'exécution.</span>
                 </div>
             </div>
         </div>
@@ -172,7 +191,7 @@
             if (!id) return showError("ERREUR : ID MANQUANT");
 
             const { data, error } = await supabaseClient.from('rapports_enquete').select('*').eq('id', id).single();
-            if (error || !data) return showError("RAPPORT INTROUVABLE");
+            if (error || !data) return showError("DONNÉES CORROMPUES OU INTROUVABLES");
 
             r = data;
             document.getElementById('content_layout').style.display = "flex";
@@ -186,22 +205,22 @@
 
         function afficherModeLecture() {
             modeEdition = false;
-            document.getElementById('btn_mode').innerText = "[ÉDITER LE RAPPORT]";
+            document.getElementById('btn_mode').innerText = "[ÉDITER LA BASE]";
 
-            document.getElementById('r_titre').innerText = `RAPPORT D'ANALYSE : SUJET "${r.titre || 'INCONNU'}"`;
-            document.getElementById('r_id_display').innerText = `UBC-${id.substring(0,4).toUpperCase()}`;
+            document.getElementById('r_titre').innerText = r.titre || 'SUJET INCONNU';
+            document.getElementById('r_id_display').innerText = `UBC-${id.substring(0,6).toUpperCase()}`;
             
             document.getElementById('r_img').src = r.image_url && r.image_url.startsWith('http') ? r.image_url : `images/default_folder.png`;
             document.getElementById('r_date_display').innerText = new Date(r.created_at).toLocaleDateString('fr-FR');
 
             document.getElementById('r_details').innerHTML = `
-                <div><strong>NOM DU SUJET :</strong> ${r.titre || "Inconnu"}</div>
-                <div><strong>AGENT EN CHARGE :</strong> ${r.auteur_enquete || "Inconnu"}</div>
-                <div><strong>CLASSIFICATION :</strong> SUJET EXPÉRIMENTAL</div>
-                <div><strong>STATUT :</strong> EN OBSERVATION</div>
+                <div><strong>SUJET :</strong> ${r.titre || "Non classifié"}</div>
+                <div><strong>SUPERVISEUR :</strong> ${r.auteur_enquete || "Anonyme"}</div>
+                <div><strong>STATUT :</strong> SURVEILLANCE ACTIVE</div>
+                <div><strong>MENACE :</strong> ÉVALUATION EN COURS</div>
             `;
 
-            let contenuBrut = r.contenu || "Aucun contenu textuel consigné pour cette enquête.";
+            let contenuBrut = r.contenu || "Aucune donnée textuelle indexée.";
             pagesArray = contenuBrut.split('===PAGE===');
             pageCourante = 0; 
 
@@ -211,9 +230,16 @@
 
         function afficherPageCourante() {
             let texteDeLaPage = pagesArray[pageCourante];
+            
+            // 1. Remplacement des images
             texteDeLaPage = texteDeLaPage.replace(/\[IMG:(.+?)\]/g, '<img src="$1" class="photo-incrustee" alt="Archive visuelle">');
+            
+            // 2. NOUVEAUTÉ : Création des gros titres
+            // Tout texte précédé de "## " sera transformé en titre de section
+            texteDeLaPage = texteDeLaPage.replace(/##\s*(.+)/g, '<div class="section-titre">$1</div>');
+
             document.getElementById('r_contenu').innerHTML = texteDeLaPage;
-            document.getElementById('page_info').innerText = `FEUILLET ${pageCourante + 1} / ${pagesArray.length}`;
+            document.getElementById('page_info').innerText = `BLOC ${pageCourante + 1} / ${pagesArray.length}`;
             document.getElementById('btn_prev').disabled = (pageCourante === 0);
             document.getElementById('btn_next').disabled = (pageCourante === pagesArray.length - 1);
         }
@@ -225,20 +251,25 @@
 
         function afficherModeEdition() {
             modeEdition = true;
-            document.getElementById('btn_mode').innerText = "[SAUVEGARDER LES MODIFICATIONS]";
+            document.getElementById('btn_mode').innerText = "[SAUVEGARDER]";
             document.getElementById('pagination_ui').style.display = 'none';
 
-            document.getElementById('r_titre').innerHTML = `RAPPORT D'ANALYSE : SUJET <input type="text" id="edit_titre" class="edit-input" style="width: 100%; margin-top: 10px;">`;
+            document.getElementById('r_titre').innerHTML = `<input type="text" id="edit_titre" class="edit-input" style="font-size:24px;">`;
             document.getElementById('edit_titre').value = r.titre || '';
             
             document.getElementById('r_details').innerHTML = `
-                <div style="grid-column: span 2;"><strong>URL DE L'IMAGE PRINCIPALE :</strong><br><input type="text" id="edit_image_url" class="edit-input"></div>
-                <div style="grid-column: span 2;"><strong>AGENT EN CHARGE :</strong><br><input type="text" id="edit_auteur" class="edit-input"></div>
+                <div style="grid-column: span 2;"><strong>LIEN IMAGE (SOURCE) :</strong><br><input type="text" id="edit_image_url" class="edit-input"></div>
+                <div style="grid-column: span 2;"><strong>SUPERVISEUR :</strong><br><input type="text" id="edit_auteur" class="edit-input"></div>
             `;
             document.getElementById('edit_image_url').value = r.image_url || '';
             document.getElementById('edit_auteur').value = r.auteur_enquete || '';
 
-            let aideTexte = `<div style="font-family:'Courier Prime', monospace; font-size:12px; color:#990000; margin-bottom:10px;">ASTUCES D'ÉDITION :<br>- Coupe de page : ===PAGE===<br>- Image : [IMG:lien.jpg]</div>`;
+            let aideTexte = `<div style="font-size:13px; color:var(--danger-color); margin-bottom:15px; border: 1px solid var(--danger-color); padding: 10px;">
+                COMMANDES TERMINAL DISPONIBLES :<br>
+                - Pour créer un gros titre de section, tape : <strong>## Ton Titre</strong><br>
+                - Pour couper la page, tape : <strong>===PAGE===</strong><br>
+                - Pour insérer une image, tape : <strong>[IMG:lien_de_l_image.jpg]</strong>
+            </div>`;
             document.getElementById('r_contenu').innerHTML = aideTexte + `<textarea id="edit_contenu" class="edit-input"></textarea>`;
             document.getElementById('edit_contenu').value = r.contenu || '';
         }
@@ -250,7 +281,7 @@
 
         async function sauvegarderFiche() {
             const btn = document.getElementById('btn_mode');
-            btn.innerText = "[SYNCHRONISATION EN COURS...]";
+            btn.innerText = "[UPLOAD EN COURS...]";
 
             const modifications = {
                 titre: document.getElementById('edit_titre').value,
@@ -262,7 +293,7 @@
             const { error } = await supabaseClient.from('rapports_enquete').update(modifications).eq('id', id);
 
             if (error) {
-                alert("ÉCHEC DE LA SYNCHRONISATION");
+                alert("ERREUR RÉSEAU");
                 btn.innerText = "[RÉESSAYER]"; 
             } else {
                 r = { ...r, ...modifications };

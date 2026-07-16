@@ -16,7 +16,7 @@
             padding-bottom: 50px;
         }
 
-        /* LE DOSSIER NUMÉRIQUE : Noir profond, bordures et ombres vertes */
+        /* LE DOSSIER NUMÉRIQUE */
         .dossier-wrapper {
             background-color: rgba(5, 5, 5, 0.95); 
             width: 100%;
@@ -77,7 +77,7 @@
             min-height: 200px; 
         }
 
-        /* LE STYLE POUR LES TITRES DE SECTIONS AGRANDIS (##) */
+        /* TITRES DE SECTIONS */
         .section-titre {
             font-size: 28px;
             color: var(--accent-color);
@@ -89,7 +89,6 @@
             text-shadow: 0 0 8px rgba(0, 255, 65, 0.4);
         }
 
-        /* LE STYLE POUR LES SOUS-TITRES (#) */
         .sous-titre {
             font-size: 22px;
             color: var(--accent-color);
@@ -108,7 +107,7 @@
         .confidentiel-stamp { color: var(--danger-color); font-weight: bold; font-size: 16px; text-align: right; text-transform: uppercase; letter-spacing: 2px; }
         .confidentiel-stamp span { display: block; font-size: 11px; color: var(--text-color); letter-spacing: 0; margin-top: 5px; }
 
-        /* --- STYLES DE PAGINATION & ÉDITION --- */
+        /* PAGINATION & ÉDITION */
         .pagination-bar {
             display: flex; justify-content: space-between; align-items: center;
             padding: 10px 40px 30px 40px; font-size: 16px; color: var(--accent-color);
@@ -139,7 +138,7 @@
     <div class="page-wrapper">
         
         <div class="terminal-header" id="content_layout" style="display: none; width: 100%; max-width: 800px; justify-content: center; gap: 20px;">
-            <button class="btn-retour" onclick="window.location.href='rapports.html'" style="width: auto;">[RETOUR AUX ARCHIVES]</button>
+            <button class="btn-retour" onclick="window.location.href='rapports.html'" style="width: auto;">[RETOUR]</button>
             <button class="btn-retour btn-enregistrer" id="btn_mode" onclick="basculerMode()" style="width: auto;">[ÉDITER LE RAPPORT]</button>
         </div>
 
@@ -162,11 +161,13 @@
                 <span id="r_titre">CHARGEMENT...</span>
             </div>
 
+            <!-- Ces deux blocs seront masqués après la page 1 -->
             <div class="photo-container" id="bloc_photo_principale">
                 <img id="r_img" src="" alt="Fichier Visuel">
             </div>
 
             <div class="info-grid" id="r_details"></div>
+            <!-- Fin de la zone de présentation -->
 
             <div class="contenu-digital" id="r_contenu"></div>
 
@@ -242,19 +243,25 @@
         function afficherPageCourante() {
             let texteDeLaPage = pagesArray[pageCourante];
             
-            // 1. Remplacement des images
             texteDeLaPage = texteDeLaPage.replace(/\[IMG:(.+?)\]/g, '<img src="$1" class="photo-incrustee" alt="Archive visuelle">');
-            
-            // 2. Création des GROS TITRES de section (##)
             texteDeLaPage = texteDeLaPage.replace(/##\s*(.+)/g, '<div class="section-titre">$1</div>');
-
-            // 3. Création des SOUS-TITRES (#)
             texteDeLaPage = texteDeLaPage.replace(/#\s*(.+)/g, '<div class="sous-titre">$1</div>');
 
             document.getElementById('r_contenu').innerHTML = texteDeLaPage;
             document.getElementById('page_info').innerText = `BLOC ${pageCourante + 1} / ${pagesArray.length}`;
             document.getElementById('btn_prev').disabled = (pageCourante === 0);
             document.getElementById('btn_next').disabled = (pageCourante === pagesArray.length - 1);
+
+            // NOUVEAUTÉ : GESTION DE LA PAGE DE PRÉSENTATION
+            if (pageCourante === 0) {
+                // Si on est sur le premier bloc, on affiche l'image et la grille
+                document.getElementById('bloc_photo_principale').style.display = 'block';
+                document.getElementById('r_details').style.display = 'grid';
+            } else {
+                // Dès qu'on passe aux blocs suivants, on les masque
+                document.getElementById('bloc_photo_principale').style.display = 'none';
+                document.getElementById('r_details').style.display = 'none';
+            }
         }
 
         function changerPage(direction) {
@@ -267,6 +274,11 @@
             document.getElementById('btn_mode').innerText = "[SAUVEGARDER]";
             document.getElementById('pagination_ui').style.display = 'none';
 
+            // Sécurité : on force le réaffichage de la grille et de l'image en mode édition
+            // même si on était sur la page 2 avant de cliquer sur "Éditer"
+            document.getElementById('bloc_photo_principale').style.display = 'block';
+            document.getElementById('r_details').style.display = 'grid';
+
             document.getElementById('r_titre').innerHTML = `<input type="text" id="edit_titre" class="edit-input" style="font-size:24px;">`;
             document.getElementById('edit_titre').value = r.titre || '';
             
@@ -277,7 +289,6 @@
             document.getElementById('edit_image_url').value = r.image_url || '';
             document.getElementById('edit_auteur').value = r.auteur_enquete || '';
 
-            // Mise à jour de l'aide avec la commande sous-titre (#)
             let aideTexte = `<div style="font-size:13px; color:var(--danger-color); margin-bottom:15px; border: 1px solid var(--danger-color); padding: 10px;">
                 COMMANDES TERMINAL DISPONIBLES :<br>
                 - Titre principal : <strong>## Ton Titre</strong><br>

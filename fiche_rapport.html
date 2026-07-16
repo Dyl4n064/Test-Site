@@ -4,30 +4,252 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
+    <!-- Importation des polices pour le style machine à écrire, écriture manuscrite et code-barres -->
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Courier+Prime:ital,wght@0,400;0,700;1,400&family=Libre+Barcode+39&family=Inter:wght@400;700&display=swap" rel="stylesheet">
     <title>Rapport d'Enquête</title>
+
+    <style>
+        /* --- STYLE SPÉCIFIQUE DU DOSSIER UMBRELLA --- */
+        body {
+            background-color: #111; /* Fond sombre autour du dossier */
+            display: flex;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .dossier-wrapper {
+            background-color: #dfd5c1; /* Couleur papier vieilli / chemise cartonnée */
+            width: 100%;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.8), inset 0 0 50px rgba(150, 130, 100, 0.3);
+            border-radius: 5px 15px 15px 5px; /* Forme de pochette */
+            color: #222;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            overflow: hidden;
+            border-left: 3px solid #b8ab94;
+        }
+
+        /* En-tête du document */
+        .dossier-header-doc {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            padding: 40px 40px 20px 40px;
+            border-bottom: 2px solid #a3957f;
+            margin-bottom: 30px;
+        }
+
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-section img {
+            width: 40px;
+            height: 40px;
+        }
+
+        .logo-text {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .meta-section {
+            font-family: 'Courier Prime', monospace;
+            color: #990000;
+            font-size: 12px;
+            line-height: 1.5;
+            text-align: right;
+        }
+
+        /* Titre */
+        .titre-rapport {
+            padding: 0 40px;
+            font-size: 32px;
+            font-weight: 900;
+            margin-bottom: 5px;
+            color: #1a1a1a;
+        }
+
+        /* Zone de la photo avec effet scotch */
+        .photo-container {
+            position: relative;
+            width: 80%;
+            margin: 30px auto;
+            background: #fff;
+            padding: 10px 10px 35px 10px;
+            box-shadow: 2px 4px 15px rgba(0,0,0,0.2);
+            transform: rotate(-1deg);
+        }
+
+        .photo-container img {
+            width: 100%;
+            height: auto;
+            max-height: 400px;
+            object-fit: cover;
+            filter: contrast(1.1) sepia(0.2);
+        }
+
+        .tape {
+            position: absolute;
+            width: 90px;
+            height: 25px;
+            background-color: rgba(220, 215, 190, 0.6);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            backdrop-filter: blur(2px);
+        }
+
+        .tape-top { top: -10px; left: -20px; transform: rotate(-35deg); }
+        .tape-bottom { bottom: 10px; right: -25px; transform: rotate(-25deg); }
+
+        /* Grille d'informations (style machine à écrire) */
+        .info-grid {
+            margin: 0 40px 30px 40px;
+            border: 1px solid #333;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            font-family: 'Courier Prime', monospace;
+            font-size: 13px;
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .info-grid div {
+            padding: 10px;
+            border: 1px solid #333;
+        }
+
+        /* Contenu du rapport (style manuscrit) */
+        .contenu-manuscrit {
+            padding: 0 40px 40px 40px;
+            font-family: 'Caveat', cursive;
+            font-size: 24px; /* Plus grand car c'est une police manuscrite */
+            line-height: 1.4;
+            color: #2b2b2b;
+            white-space: pre-wrap;
+        }
+
+        /* Pied de page (Code barre et Confidentiel) */
+        .dossier-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            margin-top: 20px;
+            border-top: 1px dashed #a3957f;
+        }
+
+        .barcode {
+            font-family: 'Libre Barcode 39', cursive;
+            font-size: 45px;
+            color: #111;
+        }
+
+        .confidentiel-stamp {
+            color: #b30000;
+            font-weight: bold;
+            font-size: 14px;
+            text-align: right;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .confidentiel-stamp span {
+            display: block;
+            font-size: 9px;
+            color: #555;
+            letter-spacing: 0;
+            margin-top: 5px;
+        }
+
+        /* Boutons de contrôle (Garde un style hors du dossier) */
+        .controls {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .controls button {
+            background: #333;
+            color: #dfd5c1;
+            border: 1px solid #dfd5c1;
+            padding: 8px 15px;
+            cursor: pointer;
+            font-family: 'Courier Prime', monospace;
+            font-weight: bold;
+        }
+        .controls button:hover { background: #dfd5c1; color: #333; }
+
+        /* Styles d'édition */
+        .edit-input {
+            width: 100%;
+            background: rgba(255,255,255,0.5);
+            border: 1px dashed #990000;
+            font-family: inherit;
+            font-size: inherit;
+            padding: 5px;
+        }
+        textarea.edit-input {
+            height: 300px;
+            resize: vertical;
+        }
+    </style>
 </head>
 <body>
-    <div class="container container-roster">
+
+    <div style="width: 100%; max-width: 800px;">
         
-        <div class="terminal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
-            <button class="btn-retour" onclick="window.location.href='rapports.html'" style="width: auto; padding: 7px 15px;">[RETOUR]</button>
-            <button id="btn_mode" class="btn-retour btn-enregistrer" onclick="basculerMode()" style="width: auto; padding: 7px 15px;">[ÉDITER LE RAPPORT]</button>
+        <!-- Boutons hors du dossier -->
+        <div class="controls" id="content_layout" style="display: none;">
+            <button onclick="window.location.href='rapports.html'">[RETOUR AUX ARCHIVES]</button>
+            <button id="btn_mode" onclick="basculerMode()">[ÉDITER LE RAPPORT]</button>
         </div>
 
-        <div class="profile-layout" style="display: none;" id="content_layout">
-            <aside class="infobox">
-                <h2 id="r_titre" style="text-align: center; margin-top: 0; margin-bottom: 15px; word-wrap: break-word;">CHARGEMENT...</h2>
-                
-                <img id="r_img" src="" alt="Couverture" style="width:100%; max-height:250px; object-fit:cover; background:#000; border-bottom:1px solid var(--border-color); padding-bottom: 10px; margin-bottom: 15px;">
-                
-                <div class="data-scan" id="r_details">
-                </div>
-            </aside>
+        <!-- Le Dossier Physique -->
+        <div class="dossier-wrapper">
             
-            <main>
-                <h2 style="margin-top:0; color: var(--accent-color);"> COMPTE RENDU</h2>
-                <div id="r_contenu" style="white-space: pre-wrap; line-height: 1.6; padding: 15px; background: rgba(0,0,0,0.4); border: 1px solid var(--border-color);"></div>
-            </main>
+            <div class="dossier-header-doc">
+                <div class="logo-section">
+                    <!-- Tu peux remplacer le src par le vrai logo d'Umbrella -->
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Umbrella_Corporation_logo.svg/512px-Umbrella_Corporation_logo.svg.png" alt="Logo">
+                    <div class="logo-text">UMBRELLA<br><span style="font-size:12px; font-weight:normal;">CORPORATION</span></div>
+                </div>
+                <div class="meta-section">
+                    N° DOSSIER : <span id="r_id_display">CHARGEMENT...</span><br>
+                    NIVEAU DE SÉCURITÉ : 4<br>
+                    DATE : <span id="r_date_display">--.--.----</span>
+                </div>
+            </div>
+
+            <div class="titre-rapport" id="r_titre_container">
+                Rapport <br>
+                <span style="font-size: 16px; text-transform: uppercase;" id="r_titre">CHARGEMENT...</span>
+            </div>
+
+            <div class="photo-container">
+                <div class="tape tape-top"></div>
+                <img id="r_img" src="" alt="Photo du sujet">
+                <div class="tape tape-bottom"></div>
+            </div>
+
+            <div class="info-grid" id="r_details">
+                <!-- Les détails (Agent, Date, etc.) seront injectés ici -->
+            </div>
+
+            <div class="contenu-manuscrit" id="r_contenu">
+                <!-- Le texte du rapport sera injecté ici -->
+            </div>
+
+            <div class="dossier-footer">
+                <div class="barcode">*UBC-27A-GRACE*</div>
+                <div class="confidentiel-stamp">
+                    CONFIDENTIEL
+                    <span>Ce document est la propriété d'Umbrella Corporation.<br>Toute reproduction ou divulgation est strictement interdite.</span>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -49,7 +271,6 @@
                 return;
             }
 
-            // Récupération du rapport via l'ID[cite: 2]
             const { data, error } = await supabaseClient.from('rapports_enquete').select('*').eq('id', id).single();
 
             if (error || !data) {
@@ -67,19 +288,22 @@
             modeEdition = false;
             document.getElementById('btn_mode').innerText = "[ÉDITER LE RAPPORT]";
 
-            document.getElementById('r_titre').innerText = r.titre ? `${r.titre.toUpperCase()}` : 'DOSSIER SANS TITRE';
+            // Injection des données
+            document.getElementById('r_titre').innerText = `RAPPORT D'ANALYSE : SUJET "${r.titre || 'INCONNU'}"`;
+            document.getElementById('r_id_display').innerText = `UBC-${id.substring(0,4).toUpperCase()}`;
             
             const imageSrc = r.image_url && r.image_url.startsWith('http') ? r.image_url : `images/default_folder.png`;
             document.getElementById('r_img').src = imageSrc;
 
-            // Formatage de la date générée par Supabase
             const dateCreation = new Date(r.created_at).toLocaleDateString('fr-FR');
+            document.getElementById('r_date_display').innerText = dateCreation;
 
+            // Grille d'infos façon tapuscrit
             document.getElementById('r_details').innerHTML = `
-                <label>AGENT EN CHARGE</label>
-                <p>${r.auteur_enquete || "Inconnu"}</p>
-                <label>DATE D'ENREGISTREMENT</label>
-                <p>${dateCreation}</p>
+                <div><strong>NOM DU SUJET :</strong> ${r.titre || "Inconnu"}</div>
+                <div><strong>AGENT EN CHARGE :</strong> ${r.auteur_enquete || "Inconnu"}</div>
+                <div><strong>CLASSIFICATION :</strong> SUJET EXPÉRIMENTAL</div>
+                <div><strong>STATUT :</strong> EN OBSERVATION</div>
             `;
 
             document.getElementById('r_contenu').innerText = r.contenu || "Aucun contenu textuel consigné pour cette enquête.";
@@ -89,17 +313,25 @@
             modeEdition = true;
             document.getElementById('btn_mode').innerText = "[SAUVEGARDER LES MODIFICATIONS]";
 
-            // Champs d'édition avec formatage CSS intégré[cite: 2]
-            document.getElementById('r_titre').innerHTML = `<input type="text" id="edit_titre" value="${r.titre || ''}" style="width: 100%; text-align: center; color: var(--accent-color); background: transparent; border: 1px dashed var(--accent-color);">`;
+            // J'ai corrigé le problème d'injection HTML ici en assignant les valeurs proprement
+            document.getElementById('r_titre').innerHTML = `RAPPORT D'ANALYSE : SUJET <input type="text" id="edit_titre" class="edit-input" style="width: auto; display: inline-block;">`;
+            document.getElementById('edit_titre').value = r.titre || '';
             
             document.getElementById('r_details').innerHTML = `
-                <label>URL DE L'IMAGE</label>
-                <input type="text" id="edit_image_url" value="${r.image_url || ''}">
-                <label>AGENT EN CHARGE</label>
-                <input type="text" id="edit_auteur" value="${r.auteur_enquete || ''}">
+                <div style="grid-column: span 2;">
+                    <strong>URL DE L'IMAGE :</strong><br>
+                    <input type="text" id="edit_image_url" class="edit-input">
+                </div>
+                <div style="grid-column: span 2;">
+                    <strong>AGENT EN CHARGE :</strong><br>
+                    <input type="text" id="edit_auteur" class="edit-input">
+                </div>
             `;
+            document.getElementById('edit_image_url').value = r.image_url || '';
+            document.getElementById('edit_auteur').value = r.auteur_enquete || '';
 
-            document.getElementById('r_contenu').innerHTML = `<textarea id="edit_contenu" rows="20" style="width: 100%; box-sizing: border-box; background: transparent; color: var(--text-color); border: 1px dashed var(--accent-color); padding: 10px; font-family: inherit;">${r.contenu || ''}</textarea>`;
+            document.getElementById('r_contenu').innerHTML = `<textarea id="edit_contenu" class="edit-input"></textarea>`;
+            document.getElementById('edit_contenu').value = r.contenu || '';
         }
 
         function basculerMode() {

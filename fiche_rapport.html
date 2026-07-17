@@ -248,7 +248,7 @@
             texteDeLaPage = texteDeLaPage.replace(/#\s*(.+)/g, '<div class="sous-titre">$1</div>');
 
             document.getElementById('r_contenu').innerHTML = texteDeLaPage;
-            document.getElementById('page_info').innerText = `BLOC ${pageCourante + 1} / ${pagesArray.length}`;
+            document.getElementById('page_info').innerText = `PAGE ${pageCourante + 1} / ${pagesArray.length}`;
             document.getElementById('btn_prev').disabled = (pageCourante === 0);
             document.getElementById('btn_next').disabled = (pageCourante === pagesArray.length - 1);
 

@@ -10,7 +10,7 @@
     <div class="container">
         
         <div class="terminal-header">
-            <h2 id="welcome-message">> BIENVENUE, AGENT_</h2>
+            <h2 id="welcome-message">> BIENVENUE, AGENT<span class="curseur-terminal">|</span></h2>
             <p id="horloge" class="horloge-centre">CALCUL DU TEMPS...</p>
             <button class="btn-retour" onclick="deconnexion()" style="width: auto; padding: 7px 15px;">[ DÉCONNEXION ]</button>
         </div>
@@ -57,7 +57,7 @@
         // On coupe au niveau de l'espace et on garde le premier élément (0)
         const prenomAgent = nomComplet.split(' ')[0];
         
-        document.getElementById('welcome-message').innerText = `> BIENVENUE, ${prenomAgent.toUpperCase()}_`;
+        document.getElementById('welcome-message').innerHTML = `> BIENVENUE, ${prenomAgent.toUpperCase()}<span class="curseur-terminal">|</span>`;
 
         // --- SYSTÈME DE DÉCONNEXION ---
         async function deconnexion() {

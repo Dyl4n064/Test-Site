@@ -158,7 +158,6 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
     text-transform: uppercase;
 }
 
-/* Ce hover est couvert par la classe .btn-retour maintenant, mais on le garde en sécurité */
 #btn_mode:hover {
     box-shadow: 0 0 12px var(--accent-color);
     background-color: #fff;
@@ -271,4 +270,18 @@ button { background: var(--accent-color); color: #000; border: none; padding: 15
 
 .search-input::placeholder {
     color: rgba(0, 255, 65, 0.4);
+}
+
+/* ==========================================================================
+   ANIMATION DU CURSEUR TERMINAL
+   ========================================================================== */
+.curseur-terminal {
+    font-weight: bold;
+    color: var(--accent-color);
+    animation: clignotement 1s step-end infinite;
+}
+
+@keyframes clignotement {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
 }

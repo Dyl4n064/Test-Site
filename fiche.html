@@ -35,6 +35,12 @@
         </div>
     </div>
 
+    <!-- ÉCRAN DE ZOOM POUR LES IMAGES -->
+<div id="zoom-ecran" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; cursor: zoom-out;" onclick="this.style.display='none'">
+    <img id="zoom-img" src="" style="max-width: 90%; max-height: 90%; border: 1px solid #00ff00; box-shadow: 0 0 25px rgba(0, 255, 0, 0.3);">
+    <p style="color: #00ff00; font-family: 'Share Tech Mono', monospace; margin-top: 15px;">[CLIQUEZ N'IMPORTE OÙ POUR FERMER]</p>
+</div>
+
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
@@ -178,6 +184,12 @@
                 p = { ...p, ...modifications };
                 afficherModeLecture();
             }
+        }
+
+// Fonction pour afficher l'image en plein écran
+        function zoomerImage(url) {
+            document.getElementById('zoom-img').src = url;
+            document.getElementById('zoom-ecran').style.display = 'flex';
         }
         
         chargerFiche();

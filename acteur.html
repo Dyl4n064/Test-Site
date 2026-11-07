@@ -107,7 +107,7 @@
             document.getElementById('f_biographie').style.display = 'block';
             document.getElementById('f_biographie_edit_container').style.display = 'none';
 
-            document.getElementById('f_filmographie').innerText = acteurData.filmographie || 'Aucune filmographie enregistrée.'; 
+            document.getElementById('f_filmographie').innerHTML = acteurData.filmographie || 'Aucune filmographie enregistrée.'; 
             document.getElementById('f_filmographie').style.display = 'block';
             document.getElementById('f_filmographie_edit_container').style.display = 'none';
         }

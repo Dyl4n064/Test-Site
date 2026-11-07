@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Dossier Casting // Fandom</title>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="terminal-header">
+            <button class="btn-retour" onclick="window.location.href='personnages.html'">[🗁 RETOUR]</button>
+            <button id="btn_mode" class="btn-retour" onclick="basculerMode()">[ÉDITER LA FICHE]</button>
+        </div>
+        
+        <h1 id="f_nom">[ACCÈS SÉCURISÉ] // CHARGEMENT...</h1>
+        
+        <div class="profile-layout">
+            <aside class="infobox">
+                <img id="f_img" style="width:100%; border: 1px solid #00ff00; margin-bottom: 15px;">
+                <div id="f_img_edit_container" style="display: none; margin-bottom: 15px;"></div>
+                
+                <div id="f_details" class="data-scan">
+                    <!-- Infobox injectée par JS -->
+                </div>
+
+                <hr style="border-color: #00ff00; margin: 15px 0;">
+                <div>
+                    <p><strong>RÔLE :</strong></p>
+                    <div id="f_roles" style="margin-top: 5px; font-size: 0.9em;">Recherche...</div>
+                </div>
+            </aside>
+            
+            <main>
+                <h3>BIOGRAPHIE</h3>
+                <p id="f_biographie" style="white-space: pre-wrap;">Chargement...</p>
+                <div id="f_biographie_edit_container" style="display: none;">
+                    <textarea id="f_biographie_edit" style="width: 100%; min-height: 200px; background: #000; border: 1px solid var(--accent-color); color: #fff; padding: 10px; font-family: 'Share Tech Mono', monospace; box-sizing: border-box;"></textarea>
+                </div>
+
+                <h3 style="margin-top: 30px;">FILMOGRAPHIE</h3>
+                <p id="f_filmographie" style="white-space: pre-wrap;">Chargement...</p>
+                <div id="f_filmographie_edit_container" style="display: none;">
+                    <textarea id="f_filmographie_edit" style="width: 100%; min-height: 200px; background: #000; border: 1px solid var(--accent-color); color: #fff; padding: 10px; font-family: 'Share Tech Mono', monospace; box-sizing: border-box;"></textarea>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let acteurData = {}; 
+        let modeEdition = false; 
+
+        async function chargerActeur() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            if(!id) {
+                document.getElementById('f_nom').innerText = "ERREUR : AUCUN ID SPÉCIFIÉ";
+                return;
+            }
+
+            // 1. Récupérer les infos de l'acteur
+            const { data, error } = await supabaseClient.from('acteurs').select('*').eq('id', id).single();
+            if (error) {
+                document.getElementById('f_nom').innerText = "ACTEUR INTROUVABLE";
+                console.error(error);
+                return;
+            }
+            acteurData = data;
+
+            // 2. Récupérer les personnages joués par cet acteur dans le RP
+            const { data: persos } = await supabaseClient.from('personnages').select('id, nom, statut').eq('interprète', acteurData.nom);
+
+            let rolesHtml = '<p style="opacity:0.6;">Aucun personnage associé.</p>';
+            if (persos && persos.length > 0) {
+                rolesHtml = '<ul style="padding-left: 15px; margin: 5px 0;">' + persos.map(p => 
+                    `<li><a href="fiche.html?id=${p.id}" style="color: var(--accent-color);">${p.nom}</a> <small>(${p.statut || 'Inconnu'})</small></li>`
+                ).join('') + '</ul>';
+            }
+            document.getElementById('f_roles').innerHTML = rolesHtml;
+
+            afficherModeLecture();
+        }
+
+        function afficherModeLecture() {
+            modeEdition = false;
+            document.getElementById('btn_mode').innerText = "[ÉDITER LA FICHE]";
+            
+            document.getElementById('f_nom').innerText = acteurData.nom;
+            document.getElementById('f_img').src = acteurData.photo || ''; 
+            document.getElementById('f_img').style.display = 'block';
+            document.getElementById('f_img_edit_container').style.display = 'none';
+            
+            // Remplissage de l'infobox Fandom
+            document.getElementById('f_details').innerHTML = `
+                <p><strong>NAISSANCE :</strong> ${acteurData.naissance || 'N/A'}</p>
+                <p><strong>NATIONALITÉ :</strong> ${acteurData.nationalite || 'N/A'}</p>
+                <p><strong>ANNÉES ACTIVES :</strong> ${acteurData.annees_actives || 'N/A'}</p>
+                <hr style="border-color: #00ff00;">
+                <p><strong>LIENS / RÉSEAUX :</strong><br>${acteurData.reseaux_sociaux || 'Aucun'}</p>
+            `;
+
+            document.getElementById('f_biographie').innerText = acteurData.biographie || 'Aucune biographie enregistrée.'; 
+            document.getElementById('f_biographie').style.display = 'block';
+            document.getElementById('f_biographie_edit_container').style.display = 'none';
+
+            document.getElementById('f_filmographie').innerText = acteurData.filmographie || 'Aucune filmographie enregistrée.'; 
+            document.getElementById('f_filmographie').style.display = 'block';
+            document.getElementById('f_filmographie_edit_container').style.display = 'none';
+        }
+
+        function afficherModeEdition() {
+            modeEdition = true;
+            document.getElementById('btn_mode').innerText = "[SAUVEGARDER LES DONNÉES]";
+
+            document.getElementById('f_nom').innerHTML = `<input id="edit_nom" value="${acteurData.nom || ''}" style="width: 100%; box-sizing: border-box; font-size: 24px; color: var(--accent-color); font-family: 'Share Tech Mono', monospace;">`;
+            
+            document.getElementById('f_img').style.display = 'none';
+            const imgContainer = document.getElementById('f_img_edit_container');
+            imgContainer.style.display = 'block';
+            imgContainer.innerHTML = `<label>Lien photo (URL) :</label><input id="edit_photo" value="${acteurData.photo || ''}" style="width:100%; box-sizing:border-box;">`;
+
+            // Inputs de l'infobox en mode édition
+            document.getElementById('f_details').innerHTML = `
+                <label>Naissance</label><input id="edit_naissance" value="${acteurData.naissance || ''}">
+                <label>Nationalité</label><input id="edit_nationalite" value="${acteurData.nationalite || ''}">
+                <label>Années actives</label><input id="edit_annees_actives" value="${acteurData.annees_actives || ''}">
+                <label>Réseaux sociaux / Liens</label><textarea id="edit_reseaux" rows="2">${acteurData.reseaux_sociaux || ''}</textarea>
+            `;
+
+            document.getElementById('f_biographie').style.display = 'none';
+            document.getElementById('f_biographie_edit_container').style.display = 'block';
+            document.getElementById('f_biographie_edit').value = acteurData.biographie || '';
+
+            document.getElementById('f_filmographie').style.display = 'none';
+            document.getElementById('f_filmographie_edit_container').style.display = 'block';
+            document.getElementById('f_filmographie_edit').value = acteurData.filmographie || '';
+        }
+
+        async function basculerMode() {
+            if (!modeEdition) {
+                afficherModeEdition();
+            } else {
+                await sauvegarderActeur();
+            }
+        }
+
+        async function sauvegarderActeur() {
+            const id = new URLSearchParams(window.location.search).get('id');
+            document.getElementById('btn_mode').innerText = "[SYNCHRONISATION...]";
+
+            const modifications = {
+                nom: document.getElementById('edit_nom').value,
+                photo: document.getElementById('edit_photo').value,
+                naissance: document.getElementById('edit_naissance').value,
+                nationalite: document.getElementById('edit_nationalite').value,
+                annees_actives: document.getElementById('edit_annees_actives').value,
+                reseaux_sociaux: document.getElementById('edit_reseaux').value,
+                biographie: document.getElementById('f_biographie_edit').value,
+                filmographie: document.getElementById('f_filmographie_edit').value
+            };
+
+            const { error } = await supabaseClient.from('acteurs').update(modifications).eq('id', id);
+
+            if (error) {
+                alert("ÉCHEC DE LA SYNCHRONISATION : " + error.message);
+                console.error(error);
+                document.getElementById('btn_mode').innerText = "[RÉESSAYER]";
+            } else {
+                acteurData = { ...acteurData, ...modifications };
+                afficherModeLecture();
+            }
+        }
+        
+        chargerActeur();
+    </script>
+</body>
+</html>

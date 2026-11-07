@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="style.css">
+    <title>Enregistrement d'un Acteur / Faceclaim</title>
+</head>
+<body>
+    <div class="container">
+        
+        <div class="terminal-header" style="margin-bottom: 20px;">
+            <button class="btn-retour" onclick="window.location.href='personnages.html'" style="width: auto; padding: 7px 15px;">[ANNULER]</button>
+        </div>
+
+        <h1>ENREGISTREMENT CASTING </h1>
+        
+        <div class="field"><label>Nom complet</label><input type="text" id="f_nom" placeholder="Ex: Javicia Leslie"></div>
+        <div class="field"><label>URL de la photo (Portrait)</label><input type="text" id="f_photo" placeholder="https://..."></div>
+        <div class="field"><label>Date de naissance</label><input type="text" id="f_naissance" placeholder="Ex: 30 mai 1987"></div>
+        <div class="field"><label>Nationalité</label><input type="text" id="f_nationalite" placeholder="Ex: Germano-Américaine"></div>
+        <div class="field"><label>Années actives</label><input type="text" id="f_annees_actives" placeholder="Ex: 2010 - présent"></div>
+        <div class="field"><label>Réseaux sociaux / Liens (HTML autorisé)</label><textarea id="f_reseaux" rows="2" placeholder="<a href='...'>Instagram</a> | <a href='...'>IMDb</a>"></textarea></div>
+        
+        <div class="field"><label>Biographie complète (Éducation, Vie perso, Carrière)</label><textarea id="f_biographie" rows="8" placeholder="Texte de biographie..."></textarea></div>
+        <div class="field"><label>Filmographie (Cinéma & Télévision)</label><textarea id="f_filmographie" rows="8" placeholder="- 2021 : Batwoman ..."></textarea></div>
+        
+        <button onclick="publierActeur()" style="margin-top: 20px;">VALIDER DANS LA BASE</button>
+    </div>
+
+    <script src="config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // Pré-remplir le nom si le script vient d'une redirection de fiche personnage manquante
+        window.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const nomUrl = params.get('nom');
+            if (nomUrl) {
+                document.getElementById('f_nom').value = decodeURIComponent(nomUrl);
+            }
+        });
+
+        async function publierActeur() {
+            const btn = document.querySelector('button[onclick="publierActeur()"]');
+            const originalText = btn.innerText;
+            btn.innerText = "[ TRANSMISSION EN COURS... ]";
+
+            const dataForm = {
+                nom: document.getElementById('f_nom').value,
+                photo: document.getElementById('f_photo').value,
+                naissance: document.getElementById('f_naissance').value,
+                nationalite: document.getElementById('f_nationalite').value,
+                annees_actives: document.getElementById('f_annees_actives').value,
+                reseaux_sociaux: document.getElementById('f_reseaux').value,
+                biographie: document.getElementById('f_biographie').value,
+                filmographie: document.getElementById('f_filmographie').value
+            };
+
+            const { data, error } = await supabaseClient
+                .from('acteurs')
+                .insert([dataForm])
+                .select(); 
+            
+            if (error) { 
+                alert("ERREUR: " + error.message); 
+                console.error(error);
+                btn.innerText = originalText;
+            } else { 
+                alert("SUCCÈS: Dossier acteur créé et synchronisé."); 
+                const nouvelId = data[0].id;
+                window.location.href = 'acteur.html?id=' + nouvelId; 
+            }
+        }
+    </script>
+</body>
+</html>

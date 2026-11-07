@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/ico" href="logo site placeholder.ico">
     <title>Dossier Confidentiel</title>
 </head>
 <body>
@@ -28,7 +27,7 @@
             
             <main>
                 <h3>HISTOIRE</h3>
-                <p id="f_histoire" style="white-space: pre-wrap;">En attente de décryptage des données...</p>
+                <p id="f_histoire">En attente de décryptage des données...</p>
                 <div id="f_histoire_edit_container" style="display: none;">
                     <textarea id="f_histoire_edit" style="width: 100%; min-height: 350px; background: #000; border: 1px solid var(--accent-color); color: #fff; padding: 10px; font-family: 'Share Tech Mono', monospace; box-sizing: border-box;"></textarea>
                 </div>
@@ -36,18 +35,31 @@
         </div>
     </div>
 
-    <!-- ÉCRAN DE ZOOM POUR LES IMAGES -->
-<div id="zoom-ecran" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.9); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; cursor: zoom-out;" onclick="this.style.display='none'">
-    <img id="zoom-img" src="" style="max-width: 90%; max-height: 90%; border: 1px solid #00ff00; box-shadow: 0 0 25px rgba(0, 255, 0, 0.3);">
-    <p style="color: #00ff00; font-family: 'Share Tech Mono', monospace; margin-top: 15px;">[CLIQUEZ N'IMPORTE OÙ POUR FERMER]</p>
-</div>
-
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let p = {}; // Variable globale pour stocker les données de l'agent Umbrella/BSAA
         let modeEdition = false; // Suivi du mode actuel
+
+        // Fonction utilitaire pour générer le lien de l'acteur (existant ou lien de création)
+        async function getHtmlInterprete(nom) {
+            if (!nom) return 'N/A';
+            const { data: acteurTrouve } = await supabaseClient
+                .from('acteurs')
+                .select('id')
+                .eq('nom', nom)
+                .maybeSingle();
+
+            if (acteurTrouve) {
+                // La fiche existe -> Lien direct vers son profil
+                return `<a href="acteur.html?id=${acteurTrouve.id}" style="color: var(--accent-color); text-decoration: underline;" title="Voir le dossier acteur">${nom}</a>`;
+            } else {
+                // La fiche n'existe pas -> Lien vers la création avec le nom pré-rempli
+                const urlCreation = `create_casting.html?nom=${encodeURIComponent(nom)}`;
+                return `<a href="${urlCreation}" style="color: #ff4444; text-decoration: dashed underline;" title="Fiche absente - Cliquer pour créer">[CRÉER] ${nom}</a>`;
+            }
+        }
 
         async function chargerFiche() {
             const id = new URLSearchParams(window.location.search).get('id');
@@ -64,6 +76,7 @@
             }
 
             p = data; // Stockage des données reçues
+            p.htmlInterprete = await getHtmlInterprete(p.interprète); // Génération du lien de l'acteur
             afficherModeLecture();
         }
 
@@ -77,7 +90,7 @@
             document.getElementById('f_img').style.display = 'block';
             document.getElementById('f_img_edit_container').style.display = 'none';
             
-            document.getElementById('f_histoire').innerHTML = p.histoire_complète; 
+            document.getElementById('f_histoire').innerText = p.histoire_complète; 
             document.getElementById('f_histoire').style.display = 'block';
             document.getElementById('f_histoire_edit_container').style.display = 'none';
 
@@ -97,7 +110,7 @@
                 <p><strong>RELATIONS :</strong> ${p.relations || 'Neutres'}</p>
                 <p><strong>ENNEMIS :</strong> ${p.ennemis || 'Inconnus'}</p>
                 <hr style="border-color: #00ff00;">
-                <p><small>INTERPRÈTE : ${p.interprète || 'N/A'}</small></p>
+                <p><small>INTERPRÈTE : ${p.htmlInterprete || 'N/A'}</small></p>
                 <p><small>ROLEPLAYER : ${p.roleplayer || 'N/A'}</small></p>
             `;
         }
@@ -181,16 +194,11 @@
                 console.error(error);
                 document.getElementById('btn_mode').innerText = "[RETIENT DE SÉCURITÉ : RÉESSAYER]";
             } else {
-                // Mise à jour locale de la variable et retour au mode lecture propre
+                // Mise à jour locale de la variable et recalcul du lien acteur
                 p = { ...p, ...modifications };
+                p.htmlInterprete = await getHtmlInterprete(p.interprète);
                 afficherModeLecture();
             }
-        }
-
-// Fonction pour afficher l'image en plein écran
-        function zoomerImage(url) {
-            document.getElementById('zoom-img').src = url;
-            document.getElementById('zoom-ecran').style.display = 'flex';
         }
         
         chargerFiche();

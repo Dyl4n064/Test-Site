@@ -50,7 +50,6 @@
 
     <script src="config.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script>
         const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         let acteurData = {}; 
@@ -105,7 +104,7 @@
             `;
 
             const bioRaw = acteurData.biographie || 'Aucune biographie enregistrée.';
-            document.getElementById('f_biographie').innerHTML = marked.parse(bioRaw); 
+            document.getElementById('f_biographie').innerHTML = bioRaw;
             document.getElementById('f_biographie').style.display = 'block';
             document.getElementById('f_biographie_edit_container').style.display = 'none';
 

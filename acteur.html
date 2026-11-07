@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="style.css">
@@ -103,7 +104,8 @@
                 <p><strong>LIENS / RÉSEAUX :</strong><br>${acteurData.reseaux_sociaux || 'Aucun'}</p>
             `;
 
-            document.getElementById('f_biographie').innerText = acteurData.biographie || 'Aucune biographie enregistrée.'; 
+            const bioRaw = acteurData.biographie || 'Aucune biographie enregistrée.';
+            document.getElementById('f_biographie').innerHTML = marked.parse(bioRaw); 
             document.getElementById('f_biographie').style.display = 'block';
             document.getElementById('f_biographie_edit_container').style.display = 'none';
 
